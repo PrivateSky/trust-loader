@@ -165,7 +165,7 @@ function NewController() {
         console.log(`Loading wallet ${keySSI}`);
         spinner.removeFromView();
         const basePath = window.location.href.split("loader")[0];
-        window.location.replace(basePath + "loader/?login=auto");
+        window.location.replace(basePath + "loader/?login");
       });
     });
   }
@@ -213,14 +213,6 @@ document.addEventListener("DOMContentLoaded", function () {
   controller.createForm();
   prepareView(page_labels);
   prepareViewContent();
-  /*//add ckick listener to toggle password view
-  let passToggles = document.getElementsByClassName("toggle-password");
-  for (let i = 0; i < passToggles.length; i++) {
-    passToggles[i].addEventListener("click", (event) => {
-      toggleViewPassword(event);
-    })
-  }*/
-
 
   if (LOADER_GLOBALS.environment.allowPinLogin) {
     document.getElementById("pin-container").classList.remove("d-none");

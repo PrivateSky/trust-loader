@@ -117,23 +117,30 @@ function RecoverWalletController() {
         showFormError(document.getElementById("recover-key-form"), LOADER_GLOBALS.LABELS_DICTIONARY.WRONG_KEY);
         return console.error(err);
       }
+
       self.writeUserDetailsToFile(newWallet, (err, data) => {
         if (err) {
+          document.getElementById("register-details-error").innerHTML = "could not write user details";
           return console.log(err);
         }
 
         self.getUserDetailsFromFile(newWallet, (err, data) => {
           if (err) {
+            document.getElementById("register-details-error").innerHTML = "could not read user details";
             return console.log(err);
           }
           console.log("Logged user", data);
+          LOADER_GLOBALS.saveCredentials();
+          let pinCode = LOADER_GLOBALS.getLastPinCode();
+          if (pinCode) {
+            LOADER_GLOBALS.savePinCodeCredentials(pinCode, LOADER_GLOBALS.credentials)
+          }
+          const basePath = window.location.href.split("loader")[0];
+          window.location.replace(basePath + "loader/?login");
         })
 
       });
-      new WalletRunner({
-        seed: recoveryKey,
-        spinner
-      }).run();
+
     });
   }
 
@@ -170,15 +177,16 @@ function RecoverWalletController() {
         LOADER_GLOBALS.clearCredentials();
         LOADER_GLOBALS.REGISTRATION_FIELDS.slice().reverse().forEach(field => {
           if (field.visible) {
-            formFields.unshift(field.fieldId);
+
             if (field.fieldId !== "password" && field.fieldId !== "confirm-password") {
-              LOADER_GLOBALS.credentials[field.fieldId] = userData[field.fieldId];
+              formFields.unshift(field.fieldId);
               let readonlyElement = document.createElement("div");
               readonlyElement.innerHTML = `<b><span class="label">${field.fieldLabel}:</span></b> <span class="field-value">${userData[field.fieldId]}</span>`
               readonlyFormContent.prepend(readonlyElement);
             }
           }
         })
+        formFields.forEach(fieldId=> LOADER_GLOBALS.credentials[fieldId] = userData[fieldId])
         let passToggles = document.getElementsByClassName("toggle-password");
         for (let i = 0; i < passToggles.length; i++) {
           passToggles[i].addEventListener("click", (event) => {

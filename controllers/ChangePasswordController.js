@@ -79,7 +79,7 @@ function ChangePasswordController() {
 
   this.goBack = function () {
     const basePath = window.location.href.split("loader")[0];
-    window.location.replace(basePath + "loader/?login=auto");
+    window.location.replace(basePath + "loader/?login");
   };
 
   this.openWallet = function (event) {
@@ -126,16 +126,13 @@ function ChangePasswordController() {
               console.log("Logged user", data);
             })
           });
+          LOADER_GLOBALS.saveCredentials();
           let pinCode = LOADER_GLOBALS.getLastPinCode();
           if (pinCode) {
             LOADER_GLOBALS.savePinCodeCredentials(pinCode, LOADER_GLOBALS.credentials)
           }
           const basePath = window.location.href.split("loader")[0];
           window.location.replace(basePath + "loader/?login");
-          /*          new WalletRunner({
-                      seed: keySSI,
-                      spinner
-                    }).run();*/
         });
       });
     });

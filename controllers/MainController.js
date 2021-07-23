@@ -320,28 +320,22 @@ function MainController() {
 }
 
 const controller = new MainController();
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
-urlParams.get('login')
-if (urlParams.get('login') === "auto" && LOADER_GLOBALS.credentials && Object.keys(LOADER_GLOBALS.credentials).length !== 0) {
-  controller.initSpinner();
-  controller.openWallet();
-} else {
-  document.addEventListener("DOMContentLoaded", function () {
 
-    if (LOADER_GLOBALS.hasPinCodes()) {
-      document.getElementById("pin-container").classList.remove("d-none");
-      document.getElementById("open-wallet-btn").removeAttribute("disabled");
-      controller.init();
-      controller.loginWithPin = true;
-    } else {
-      controller.createForm();
-      controller.init();
-      controller.populateForm();
-      controller.loginWithPin = false
-    }
+document.addEventListener("DOMContentLoaded", function () {
 
-    prepareViewContent();
-  });
-}
+  if (LOADER_GLOBALS.hasPinCodes()) {
+    document.getElementById("pin-container").classList.remove("d-none");
+    document.getElementById("open-wallet-btn").removeAttribute("disabled");
+    controller.init();
+    controller.loginWithPin = true;
+  } else {
+    controller.createForm();
+    controller.init();
+    controller.populateForm();
+    controller.loginWithPin = false
+  }
+
+  prepareViewContent();
+});
+
 window.controller = controller;
