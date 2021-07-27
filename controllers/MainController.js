@@ -115,24 +115,29 @@ function MainController() {
   function runInAutologin(development, mobile) {
     spinner.attachToView();
     if (!LOADER_GLOBALS.credentials.isValid) {
-      let credentials = {};
-      if (!development) {
-        credentials.email = "wallet@invisible";
-        credentials.password = getSecretLocalToken(development, mobile);
-        credentials.username = "private";
-        credentials.company = "OpenDSU Development INC.";
-      } else {
-        credentials.email = DEVELOPMENT_EMAIL;
-        credentials.password = getSecretLocalToken(development, mobile);
-        credentials.username = DEVELOPMENT_USERNAME;
-        credentials.company = "OpenDSU Development INC.";
-      }
-      LOADER_GLOBALS.credentials = credentials;
-      LOADER_GLOBALS.credentials.isValid = true;
+      try {
+        let credentials = {};
+        if (!development) {
+          credentials.email = "wallet@invisible";
+          credentials.password = getSecretLocalToken(development, mobile);
+          credentials.username = "private";
+          credentials.company = "OpenDSU Development INC.";
+        } else {
+          credentials.email = DEVELOPMENT_EMAIL;
+          credentials.password = getSecretLocalToken(development, mobile);
+          credentials.username = DEVELOPMENT_USERNAME;
+          credentials.company = "OpenDSU Development INC.";
+        }
+        LOADER_GLOBALS.credentials = credentials;
+        LOADER_GLOBALS.credentials.isValid = true;
 
-      if (!development) {
-        LOADER_GLOBALS.saveCredentials();
+        if (!development) {
+          LOADER_GLOBALS.saveCredentials();
+        }
+      } catch (err) {
+        document.getElementById("register-details-error").innerText = err.message || "Something wrong with credentials";
       }
+
     }
 
     walletService.create(LOADER_GLOBALS.environment.domain, getWalletSecretArrayKey(), (err, wallet) => {

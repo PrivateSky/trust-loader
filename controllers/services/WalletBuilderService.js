@@ -481,9 +481,10 @@ function WalletBuilderService(options) {
            if(err){
                _build();
            } else {
-               console.log("Possible security issue. It is ok during development if you use the same credentials. Just do a npm run clean to remove APIHub cache in this case...");
+             throw new Error("Account already exists");
+              /* console.log("Possible security issue. It is ok during development if you use the same credentials. Just do a npm run clean to remove APIHub cache in this case...");
                walletDSU = walletDSU.getWritableDSU();
-               callback(err, walletDSU);
+               callback(err, walletDSU);*/
            }
         });
     };

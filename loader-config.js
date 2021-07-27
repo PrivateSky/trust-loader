@@ -27,20 +27,28 @@ LOADER_GLOBALS.LOCALSTORAGE_CREDENTIALS_KEY = env.appName + "-credentials";
 LOADER_GLOBALS.LOCALSTORAGE_PINCODE_KEY = env.appName + "-pincode";
 
 let encrypt = function (key, dataObj) {
-  if (typeof require !== 'undefined') {
-    const crypto = require("opendsu").loadAPI("crypto");
-    const encryptionKey = crypto.deriveEncryptionKey(key);
-    const encryptedCredentials = crypto.encrypt(JSON.stringify(dataObj), encryptionKey);
-    return JSON.stringify(encryptedCredentials);
+  try {
+    if (typeof require !== 'undefined') {
+      const crypto = require("opendsu").loadAPI("crypto");
+      const encryptionKey = crypto.deriveEncryptionKey(key);
+      const encryptedCredentials = crypto.encrypt(JSON.stringify(dataObj), encryptionKey);
+      return JSON.stringify(encryptedCredentials);
+    }
+  } catch (e) {
+    throw e;
   }
 }
 
 let decrypt = function (key, dataObj) {
-  if (typeof require !== 'undefined') {
-    const crypto = require("opendsu").loadAPI("crypto");
-    const encryptionKey = crypto.deriveEncryptionKey(key);
-    const decryptData = crypto.decrypt($$.Buffer.from(JSON.parse(dataObj)), encryptionKey);
-    return JSON.parse(decryptData.toString());
+  try {
+    if (typeof require !== 'undefined') {
+      const crypto = require("opendsu").loadAPI("crypto");
+      const encryptionKey = crypto.deriveEncryptionKey(key);
+      const decryptData = crypto.decrypt($$.Buffer.from(JSON.parse(dataObj)), encryptionKey);
+      return JSON.parse(decryptData.toString());
+    }
+  } catch (e) {
+    throw e
   }
 }
 
@@ -56,7 +64,7 @@ LOADER_GLOBALS.savePinCodeCredentials = function (pincode, credentials) {
 }
 
 function addPin(pinCode) {
-  let pinArr = localStorage.getItem(LOADER_GLOBALS.LOCALSTORAGE_PINCLOCALSTORAGE_PINCODE_KEYODE_KEY);
+  let pinArr = localStorage.getItem(LOADER_GLOBALS.LOCALSTORAGE_PINCODE_KEY);
   if (!pinArr) {
     pinArr = [pinCode];
   } else {
@@ -71,10 +79,10 @@ function removePin(pinCode) {
   if (pinArr) {
     pinArr = JSON.parse(pinArr);
     pinArr = pinArr.filter(elem => elem !== pinCode);
+    localStorage.setItem(LOADER_GLOBALS.LOCALSTORAGE_PINCODE_KEY, JSON.stringify(pinArr));
   } else {
-    return
+    throw new Error("No pin found");
   }
-  localStorage.setItem(LOADER_GLOBALS.LOCALSTORAGE_PINCODE_KEY, JSON.stringify(pinArr));
 }
 
 LOADER_GLOBALS.loadPinCodeCredentials = function (pincode) {
@@ -89,6 +97,9 @@ LOADER_GLOBALS.loadPinCodeCredentials = function (pincode) {
 
 LOADER_GLOBALS.changePinCode = function (newPin, oldPin) {
   const pinCredentials = localStorage.getItem(oldPin);
+  if (!pinCredentials) {
+    throw new Error("Could not find a stored pin")
+  }
   localStorage.setItem(newPin, pinCredentials);
   localStorage.removeItem(oldPin);
 }

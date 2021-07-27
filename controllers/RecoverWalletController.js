@@ -108,40 +108,44 @@ function RecoverWalletController() {
   }
 
   function createWallet() {
-    walletService.createWithKeySSI(LOADER_GLOBALS.environment.domain, {
-      secret: getWalletSecretArrayKey(),
-      walletKeySSI: recoveryKey
-    }, (err, newWallet) => {
-      if (err) {
-        spinner.removeFromView();
-        showFormError(document.getElementById("recover-key-form"), LOADER_GLOBALS.LABELS_DICTIONARY.WRONG_KEY);
-        return console.error(err);
-      }
-
-      self.writeUserDetailsToFile(newWallet, (err, data) => {
+    try {
+      walletService.createWithKeySSI(LOADER_GLOBALS.environment.domain, {
+        secret: getWalletSecretArrayKey(),
+        walletKeySSI: recoveryKey
+      }, (err, newWallet) => {
         if (err) {
-          document.getElementById("register-details-error").innerHTML = "could not write user details";
-          return console.log(err);
+          spinner.removeFromView();
+          showFormError(document.getElementById("recover-key-form"), LOADER_GLOBALS.LABELS_DICTIONARY.WRONG_KEY);
+          return console.error(err);
         }
 
-        self.getUserDetailsFromFile(newWallet, (err, data) => {
+        self.writeUserDetailsToFile(newWallet, (err, data) => {
           if (err) {
-            document.getElementById("register-details-error").innerHTML = "could not read user details";
+            document.getElementById("register-details-error").innerHTML = "could not write user details";
             return console.log(err);
           }
-          console.log("Logged user", data);
-          LOADER_GLOBALS.saveCredentials();
-          let pinCode = LOADER_GLOBALS.getLastPinCode();
-          if (pinCode) {
-            LOADER_GLOBALS.savePinCodeCredentials(pinCode, LOADER_GLOBALS.credentials)
-          }
-          const basePath = window.location.href.split("loader")[0];
-          window.location.replace(basePath + "loader/?login");
-        })
+
+          self.getUserDetailsFromFile(newWallet, (err, data) => {
+            if (err) {
+              document.getElementById("register-details-error").innerHTML = "could not read user details";
+              return console.log(err);
+            }
+            console.log("Logged user", data);
+            LOADER_GLOBALS.saveCredentials();
+            let pinCode = LOADER_GLOBALS.getLastPinCode();
+            if (pinCode) {
+              LOADER_GLOBALS.savePinCodeCredentials(pinCode, LOADER_GLOBALS.credentials)
+            }
+            const basePath = window.location.href.split("loader")[0];
+            window.location.replace(basePath + "loader/?login");
+          })
+
+        });
 
       });
-
-    });
+    } catch (err) {
+      document.getElementById("register-details-error").innerText = err.message || "Seed is not valid.";
+    }
   }
 
   this.openWallet = function (event) {
@@ -186,7 +190,7 @@ function RecoverWalletController() {
             }
           }
         })
-        formFields.forEach(fieldId=> LOADER_GLOBALS.credentials[fieldId] = userData[fieldId])
+        formFields.forEach(fieldId => LOADER_GLOBALS.credentials[fieldId] = userData[fieldId])
         let passToggles = document.getElementsByClassName("toggle-password");
         for (let i = 0; i < passToggles.length; i++) {
           passToggles[i].addEventListener("click", (event) => {

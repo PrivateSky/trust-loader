@@ -91,6 +91,7 @@ function NewController() {
       walletService.create(LOADER_GLOBALS.environment.domain, getWalletSecretArrayKey(), (err, wallet) => {
         if (err) {
           document.getElementById("register-details-error").innerText = "An error occurred. Please try again.";
+          spinner.removeFromView();
           return console.error(err);
         }
         let writableWallet = wallet;
@@ -118,7 +119,7 @@ function NewController() {
         });
       });
     } catch (e) {
-      document.getElementById("register-details-error").innerText = "Seed is not valid.";
+      document.getElementById("register-details-error").innerText = e.message || "Seed is not valid.";
     }
   }
 
@@ -175,7 +176,7 @@ function NewController() {
   };
 
   this.formIsValid = function () {
-   return validator.validateForm(formFields);
+    return validator.validateForm(formFields);
   }
 
   this.createForm = function () {
