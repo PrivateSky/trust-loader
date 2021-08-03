@@ -35,7 +35,10 @@ function WalletService(options) {
    */
   this.load = function (domain, secret, callback) {
     console.log("Loading the wallet");
-    NavigatorUtils.unregisterAllServiceWorkers(() => {
+    NavigatorUtils.unregisterAllServiceWorkers((err, result) => {
+      if(err){
+        return callback(err)
+      }
       let resolver = require("opendsu").loadApi("resolver");
       let keyssi = require("opendsu").loadApi("keyssi");
 

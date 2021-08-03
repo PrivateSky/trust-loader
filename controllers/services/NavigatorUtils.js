@@ -46,13 +46,19 @@ const NavigatorUtils = {
     },
 
     getRegistrations: (callback) => {
-        if (NavigatorUtils.areServiceWorkersSupported()) {
-            return navigator.serviceWorker
-                .getRegistrations()
-                .then((registrations) => callback(null, registrations))
-                .catch(callback);
-        }
-        return callback(null, []);
+      if (NavigatorUtils.areServiceWorkersSupported()) {
+        return navigator.serviceWorker
+          .getRegistrations()
+          .then((registrations) => callback(null, registrations))
+          .catch((e) => callback({
+            type: "ServiceWorkerError",
+            message: "Service Workers are not supported or are restricted by browser settings"
+          }));
+      }
+      return callback({
+        type: "ServiceWorkerError",
+        message: "Service Workers are not supported for this browser"
+      }, []);
     },
 
     sendMessage: function (message) {

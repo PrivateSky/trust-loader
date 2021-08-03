@@ -64,6 +64,9 @@ function NewController() {
 
   this.init = function () {
     NavigatorUtils.hasRegisteredServiceWorkers((error, hasServiceWorker) => {
+      if (error) {
+        return (document.getElementById("register-details-error").innerText = error.message);
+      }
       if (hasServiceWorker) {
         NavigatorUtils.unregisterAllServiceWorkers(() => {
           window.location.reload();
@@ -154,7 +157,11 @@ function NewController() {
       if (err) {
         spinner.removeFromView();
         console.error("Failed to load the wallet in domain:", LOADER_GLOBALS.environment.domain, getWalletSecretArrayKey(), err);
-        return (document.getElementById("register-details-error").innerText = "Invalid credentials");
+        if (err.type === "ServiceWorkerError") {
+          return (document.getElementById("open-walet-error").innerText = err.message);
+        } else {
+          return (document.getElementById("register-details-error").innerText = "Invalid credentials");
+        }
       }
 
       wallet.getKeySSIAsString((err, keySSI) => {

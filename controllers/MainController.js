@@ -286,8 +286,9 @@ function MainController() {
     walletService.load(LOADER_GLOBALS.environment.domain, getWalletSecretArrayKey(), (err, wallet) => {
       if (err) {
         spinner.removeFromView();
-        console.error("Failed to load the wallet in domain:", LOADER_GLOBALS.environment.domain, getWalletSecretArrayKey(), err);
-        return (document.getElementById("register-details-error").innerText = "Invalid credentials");
+        console.error("Failed to load the wallet in domain:", LOADER_GLOBALS.environment.domain, getWalletSecretArrayKey(), err.message);
+        const errText = err.type === "ServiceWorkerError" ? err.message : "Invalid credentials";
+        return (document.getElementById("register-details-error").innerText = errText);
       }
 
       let writableWallet = wallet;
