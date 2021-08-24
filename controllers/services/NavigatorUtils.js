@@ -55,10 +55,15 @@ const NavigatorUtils = {
             message: "Service Workers are not supported or are restricted by browser settings"
           }));
       }
-      return callback({
-        type: "ServiceWorkerError",
-        message: "Service Workers are not supported for this browser"
-      }, []);
+      let err;
+      if(!!LOADER_GLOBALS.environment.sw){
+        err = {
+            type: "ServiceWorkerError",
+            message: "Service Workers are not supported for this browser"
+        };
+      }
+        
+      return callback(err, []);
     },
 
     sendMessage: function (message) {
