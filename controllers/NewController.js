@@ -16,8 +16,8 @@ function NewController() {
   if (LOADER_GLOBALS.environment.mode === "dev-secure") {
     if (!LOADER_GLOBALS.credentials.isValid) {
       LOADER_GLOBALS.credentials.isValid = true;
-      LOADER_GLOBALS.credentials.username = "devsuperuser"
-      LOADER_GLOBALS.credentials.email = "dev@superuser.dev";
+      LOADER_GLOBALS.credentials.username = "devuser"
+      LOADER_GLOBALS.credentials.email = "dev@user.dev";
       LOADER_GLOBALS.credentials.company = "Company Inc";
       LOADER_GLOBALS.credentials.password = "SuperUserSecurePassword1!";
       LOADER_GLOBALS.credentials['confirm-password'] = "SuperUserSecurePassword1!";
