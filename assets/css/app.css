@@ -389,7 +389,7 @@ label.error {
     color: var(--color-light-primary-blue-button);
 }
 
-#register-successfully {
+#recovery-label {
     font-size: 22px;
     font-weight: 500;
 }
@@ -398,9 +398,12 @@ label.error {
     color: #1C374E;
     visibility: visible;
     font-size: 16px;
-    border: 1px solid #C6D0D9;
-    border-radius: 8px;
-    background: #FFFFFF;
+    font-weight: bold;
+}
+
+.recovery-code-container {
+    font-size: 14px;
+    margin-top: 15px;
 }
 
 #access-wallet {
@@ -459,7 +462,6 @@ label.error {
         left: 2rem;
         color: black;
         visibility: visible;
-        font-weight: bold;
     }
 
     #print-area {
