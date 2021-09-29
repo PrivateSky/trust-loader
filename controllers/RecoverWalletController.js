@@ -109,7 +109,7 @@ function RecoverWalletController() {
 
   function createWallet() {
     try {
-      walletService.createWithKeySSI(LOADER_GLOBALS.environment.domain, {
+      walletService.createWithKeySSI(LOADER_GLOBALS.environment.vaultDomain, {
         secret: getWalletSecretArrayKey(),
         walletKeySSI: recoveryKey
       }, (err, newWallet) => {

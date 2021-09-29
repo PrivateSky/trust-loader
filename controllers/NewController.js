@@ -91,7 +91,7 @@ function NewController() {
       console.log("Creating wallet...");
       LOADER_GLOBALS.saveCredentials();
 
-      walletService.create(LOADER_GLOBALS.environment.domain, getWalletSecretArrayKey(), (err, wallet) => {
+      walletService.create(LOADER_GLOBALS.environment.vaultDomain, getWalletSecretArrayKey(), (err, wallet) => {
         if (err) {
           document.getElementById("register-details-error").innerText = "An error occurred. Please try again.";
           spinner.removeFromView();
@@ -153,10 +153,10 @@ function NewController() {
       console.log('decrypt ', LOADER_GLOBALS.loadPinCodeCredentials(document.getElementById("pincode").value))
     }
 
-    walletService.load(LOADER_GLOBALS.environment.domain, getWalletSecretArrayKey(), (err, wallet) => {
+    walletService.load(LOADER_GLOBALS.environment.vaultDomain, getWalletSecretArrayKey(), (err, wallet) => {
       if (err) {
         spinner.removeFromView();
-        console.error("Failed to load the wallet in domain:", LOADER_GLOBALS.environment.domain, getWalletSecretArrayKey(), err);
+        console.error("Failed to load the wallet in domain:", LOADER_GLOBALS.environment.vaultDomain, getWalletSecretArrayKey(), err);
         if (err.type === "ServiceWorkerError") {
           return (document.getElementById("open-walet-error").innerText = err.message);
         } else {

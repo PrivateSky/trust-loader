@@ -35,7 +35,7 @@ function WalletBuilderService(options) {
     const APP_FOLDER = options.appFolderName;
     const APPS_FOLDER = options.appsFolderName;
     const SSI_FILE_NAME = options.ssiFileName;
-    const VAULT_DOMAIN = LOADER_GLOBALS.environment.domain;
+    const VAULT_DOMAIN = LOADER_GLOBALS.environment.vaultDomain;
 
 
     const fileService = new FileService();
@@ -433,7 +433,7 @@ function WalletBuilderService(options) {
     this.build = function (options, callback) {
         let resolver = require("opendsu").loadApi("resolver");
         let keySSISpace = require("opendsu").loadApi("keyssi");
-        let domain = LOADER_GLOBALS.environment.domain;
+        let domain = LOADER_GLOBALS.environment.vaultDomain;
 
         let _build = () => {
             fileService.getFile(WALLET_TEMPLATE_FOLDER + "/" + SSI_FILE_NAME, (err, dsuType) => {

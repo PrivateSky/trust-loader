@@ -92,10 +92,10 @@ function ChangePasswordController() {
     spinner.attachToView();
     spinner.setStatusText("Opening wallet...");
 
-    walletService.load(LOADER_GLOBALS.environment.domain, getOldSecretArrKey(), (err, wallet) => {
+    walletService.load(LOADER_GLOBALS.environment.vaultDomain, getOldSecretArrKey(), (err, wallet) => {
       if (err) {
         spinner.removeFromView();
-        console.error("Failed to load the wallet in domain:", LOADER_GLOBALS.environment.domain, getOldSecretArrKey(), err);
+        console.error("Failed to load the wallet in domain:", LOADER_GLOBALS.environment.vaultDomain, getOldSecretArrKey(), err);
         return (document.getElementById("register-details-error").innerText = "Invalid credentials");
       }
 
@@ -107,7 +107,7 @@ function ChangePasswordController() {
           return console.error("Operation failed. Try again");
         }
 
-        walletService.createWithKeySSI(LOADER_GLOBALS.environment.domain, {
+        walletService.createWithKeySSI(LOADER_GLOBALS.environment.vaultDomain, {
           secret: getWalletSecretArrayKey(),
           walletKeySSI: keySSI
         }, (err, newWallet) => {
