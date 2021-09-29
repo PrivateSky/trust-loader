@@ -385,6 +385,32 @@ label.error {
     text-align: center;
 }
 
+.title-text-color {
+    color: var(--color-light-primary-blue-button);
+}
+
+#register-successfully {
+    font-size: 22px;
+    font-weight: 500;
+}
+
+#print-area {
+    color: #1C374E;
+    visibility: visible;
+    font-size: 16px;
+    border: 1px solid #C6D0D9;
+    border-radius: 8px;
+    background: #FFFFFF;
+}
+
+#access-wallet {
+    width: 60%;
+}
+
+#print-area .fa-copy {
+    font-size: 22px;
+}
+
 /* Extra small devices (portrait phones, less than 576px)*/
 @media (max-width: 575.98px) {
     .credentials-panel {
@@ -422,22 +448,36 @@ label.error {
 
 @media print {
 
-   html *,
-   body *{
-       visibility: hidden;
-   }
-
-    #print-area{
-        text-align:center;
-        position:fixed;
-        top:4rem;
-        left:2rem;
-        color:black;
-        visibility:visible;
-        font-weight:bold;
+    html *,
+    body * {
+        visibility: hidden;
     }
 
-    #print-area *{
-        visibility:visible;
+    y
+    #recovery-label {
+        position: fixed;
+        top: 4rem;
+        left: 2rem;
+        color: black;
+        visibility: visible;
+        font-weight: bold;
+    }
+
+    #print-area {
+        text-align: center;
+        position: fixed;
+        top: 6rem;
+        left: 2rem;
+        color: black;
+        visibility: visible;
+        font-weight: bold;
+        border: 1px solid #C6D0D9;
+        border-radius: 8px
+    }
+
+
+    #print-area #recovery-code,
+    #recovery-label {
+        visibility: visible;
     }
 }

@@ -54,31 +54,32 @@
                  role="tabpanel">
                 <div class="d-flex flex-column align-items-center">
                     <div class="form-group">
-                        <label id="register-successfully"></label>
+                        <label id="register-successfully" class="title-text-color"></label>
                     </div>
                     <div class="form-group w-100 d-flex flex-column recovery-code-container">
                         <div>Please write your recovery code down on paper and keep it in a safe, offline place.
                             Never share your recovery code with anyone and never share it in any online website or
                             service.
                         </div>
-                        <div class="text-danger mt-2">If you lose your recovery code, your wallets cannot be recovered
-                        </div>
-                        <div id="print-area">
-                            <div class="mt-2">Your recovery code:</div>
-                            <div class="text-break text-primary" id="recovery-code"></div>
-                        </div>
-                        <div class="d-flex">
-                            <button class="btn btn-primary hidden-print ml-auto mr-auto mt-1"
+
+                        <div class="d-flex justify-content-between title-text-color mt-5">
+                            <div class="mt-2" id="recovery-label">Recovery code</div>
+                            <div class="hidden-print mt-1"
                                     onclick="controller.printCode();">
                                 <span aria-hidden="true"></span> Print code <i class="fas fa-print"></i>
-                            </button>
-                            <button class="btn btn-primary hidden-print ml-auto mr-auto mt-1"
+                            </div>
+                        </div>
+                        <div id="print-area" class="d-flex align-items-center p-4 mt-2">
+                            <div class="text-break mr-4" id="recovery-code"></div>
+                            <div class="hidden-print title-text-color"
                                     onclick="controller.copyCode();">
-                                <span aria-hidden="true"></span> Copy to clipboard <i class="far fa-copy"></i></i>
-                            </button>
+                                <span aria-hidden="true"></span> <i class="fas fa-copy"></i>
+                            </div>
+                        </div>
+                        <div class="text-danger text-center mt-2">If you lose your recovery code, your wallets cannot be recovered
                         </div>
                     </div>
-                    <div class="d-none" id="pin-container">
+                    <div class="d-none text-center" id="pin-container">
                         <div class="form-group">
                             <input id="pin-checkbox" name="pin-checkbox" oninput="controller.pinCheckboxHandler(event)"
                                    type="checkbox"
