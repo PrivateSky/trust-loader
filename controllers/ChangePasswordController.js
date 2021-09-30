@@ -2,7 +2,7 @@ import "./../loader-config.js";
 import {Spinner, prepareViewContent} from "./services/UIService.js";
 import WalletService from "./services/WalletService.js";
 import FileService from "./services/FileService.js";
-
+import getVaultDomain from "../utils/getVaultDomain.js";
 function ChangePasswordController() {
   const WALLET_MOUNT_POINT = "/writableDSU";
   let spinner;
@@ -92,10 +92,10 @@ function ChangePasswordController() {
     spinner.attachToView();
     spinner.setStatusText("Opening wallet...");
 
-    walletService.load(LOADER_GLOBALS.environment.vaultDomain, getOldSecretArrKey(), (err, wallet) => {
+    walletService.load(getVaultDomain(), getOldSecretArrKey(), (err, wallet) => {
       if (err) {
         spinner.removeFromView();
-        console.error("Failed to load the wallet in domain:", LOADER_GLOBALS.environment.vaultDomain, getOldSecretArrKey(), err);
+        console.error("Failed to load the wallet in domain:", getVaultDomain(), getOldSecretArrKey(), err);
         return (document.getElementById("register-details-error").innerText = "Invalid credentials");
       }
 
@@ -107,7 +107,7 @@ function ChangePasswordController() {
           return console.error("Operation failed. Try again");
         }
 
-        walletService.createWithKeySSI(LOADER_GLOBALS.environment.vaultDomain, {
+        walletService.createWithKeySSI(getVaultDomain(), {
           secret: getWalletSecretArrayKey(),
           walletKeySSI: keySSI
         }, (err, newWallet) => {

@@ -3,7 +3,7 @@ import {Spinner, prepareView, createFormElement, toggleViewPassword, prepareView
 import WalletService from "./services/WalletService.js";
 import FileService from "./services/FileService.js";
 import WalletRunner from "./services/WalletRunner.js";
-
+import getVaultDomain from "../utils/getVaultDomain.js";
 function MainController() {
 
   let USER_DETAILS_FILE = "user-details.json";
@@ -87,9 +87,9 @@ function MainController() {
       return console.warn("Array of secrets is not loaded yet...", secretArrayKey);
     }
 
-    walletService.create(LOADER_GLOBALS.environment.vaultDomain, secretArrayKey, (err, wallet) => {
+    walletService.create(getVaultDomain(), secretArrayKey, (err, wallet) => {
       if (err) {
-        throw createOpenDSUErrorWrapper(`Failed to create wallet in domain ${LOADER_GLOBALS.environment.vaultDomain}`, err);
+        throw createOpenDSUErrorWrapper(`Failed to create wallet in domain ${getVaultDomain()}`, err);
       }
       console.log("A new wallet got initialised...", wallet.getCreationSSI(true));
       return self.openWallet();
@@ -140,10 +140,10 @@ function MainController() {
 
     }
 
-    walletService.create(LOADER_GLOBALS.environment.vaultDomain, getWalletSecretArrayKey(), (err, wallet) => {
+    walletService.create(getVaultDomain(), getWalletSecretArrayKey(), (err, wallet) => {
 
       if (err) {
-        throw createOpenDSUErrorWrapper(`Failed to create wallet in domain ${LOADER_GLOBALS.environment.vaultDomain}`, err);
+        throw createOpenDSUErrorWrapper(`Failed to create wallet in domain ${getVaultDomain()}`, err);
       }
       wallet.writeFile(USER_DETAILS_FILE, JSON.stringify(LOADER_GLOBALS.credentials), (err) => {
         if (err) {
@@ -283,10 +283,10 @@ function MainController() {
       }
     })
 
-    walletService.load(LOADER_GLOBALS.environment.vaultDomain, getWalletSecretArrayKey(), (err, wallet) => {
+    walletService.load(getVaultDomain(), getWalletSecretArrayKey(), (err, wallet) => {
       if (err) {
         spinner.removeFromView();
-        console.error("Failed to load the wallet in domain:", LOADER_GLOBALS.environment.vaultDomain, getWalletSecretArrayKey(), err.message);
+        console.error("Failed to load the wallet in domain:", getVaultDomain(), getWalletSecretArrayKey(), err.message);
         const errText = err.type === "ServiceWorkerError" ? err.message : "Invalid credentials";
         return (document.getElementById("register-details-error").innerText = errText);
       }

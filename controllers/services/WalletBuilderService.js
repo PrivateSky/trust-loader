@@ -1,7 +1,7 @@
 'use strict';
 
 import FileService from "./FileService.js";
-
+import getVaultDomain from "../../utils/getVaultDomain.js";
 /**
  * @param {RawDossier} wallet
  * @param {object} options
@@ -35,7 +35,7 @@ function WalletBuilderService(options) {
     const APP_FOLDER = options.appFolderName;
     const APPS_FOLDER = options.appsFolderName;
     const SSI_FILE_NAME = options.ssiFileName;
-    const VAULT_DOMAIN = LOADER_GLOBALS.environment.vaultDomain;
+    const VAULT_DOMAIN = getVaultDomain();
 
 
     const fileService = new FileService();
@@ -433,7 +433,7 @@ function WalletBuilderService(options) {
     this.build = function (options, callback) {
         let resolver = require("opendsu").loadApi("resolver");
         let keySSISpace = require("opendsu").loadApi("keyssi");
-        let domain = LOADER_GLOBALS.environment.vaultDomain;
+        let domain = getVaultDomain();
 
         let _build = () => {
             fileService.getFile(WALLET_TEMPLATE_FOLDER + "/" + SSI_FILE_NAME, (err, dsuType) => {

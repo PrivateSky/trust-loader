@@ -9,6 +9,7 @@ import {
 import WalletService from "./services/WalletService.js";
 import FileService from "./services/FileService.js";
 import WalletRunner from "./services/WalletRunner.js";
+import getVaultDomain from "../utils/getVaultDomain.js";
 
 function RecoverWalletController() {
   const WALLET_MOUNT_POINT = "/writableDSU";
@@ -109,7 +110,7 @@ function RecoverWalletController() {
 
   function createWallet() {
     try {
-      walletService.createWithKeySSI(LOADER_GLOBALS.environment.vaultDomain, {
+      walletService.createWithKeySSI(getVaultDomain(), {
         secret: getWalletSecretArrayKey(),
         walletKeySSI: recoveryKey
       }, (err, newWallet) => {
