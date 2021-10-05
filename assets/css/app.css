@@ -383,6 +383,28 @@ label.error {
     justify-content: center;
     align-items: center;
     text-align: center;
+    color: rgb(190, 210, 240);
+    padding: 1rem 0;
+}
+
+.reload-section > button {
+    display: flex;
+    align-items: center;
+    color: var(--color-white);
+    background: var(--color-light-primary-gray-button);
+    border: 1px solid var(--color-light-primary-gray-border-button);
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    gap: 0.5rem;
+}
+
+.reload-section > button:hover {
+    background: var(--color-light-primary-gray-hover-button);
+}
+
+.reload-section > button > svg {
+    width: 1rem;
+    height: 1rem;
 }
 
 .title-text-color {

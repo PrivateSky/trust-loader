@@ -24,6 +24,11 @@ function WalletRunner(options) {
   this.seed = options.seed;
   this.hash = crypto.sha256(this.seed);
   this.spinner = options.spinner;
+  if (typeof options.isLazySpinner === 'boolean') {
+    this.isLazySpinner = options.isLazySpinner;
+  } else {
+    this.isLazySpinner = true;
+  }
 
   /**
    * Builds the iframe container
@@ -63,7 +68,39 @@ function WalletRunner(options) {
       if (iframe.hasAttribute("app-placeholder")) {
         iframe.removeAttribute("app-placeholder");
 
-        document.body.innerHTML = iframe.outerHTML;
+        if (this.isLazySpinner) {
+          document
+              .querySelectorAll("body > *:not(.loader-parent-container)")
+              .forEach((node) => node.remove());
+
+          const removeSpinner = () => {
+            const spinner = document.querySelector('.loader-parent-container');
+            if (spinner) {
+              spinner.remove();
+            }
+            this.spinner.removeFromView();
+            iframe.hidden = false;
+          }
+
+          iframe.hidden = true;
+          iframe.onload = async () => {
+            const fragment = iframe.contentWindow.document;
+            if (!fragment) {
+              return removeSpinner();
+            }
+
+            const root = fragment.querySelector('webc-app-root') || fragment.querySelector('psk-app-root');
+            if (!root) {
+              return removeSpinner();
+            }
+
+            await root.componentOnReady();
+            removeSpinner();
+          }
+          document.body.prepend(iframe);
+        } else {
+          document.body.innerHTML = iframe.outerHTML;
+        }
 
         if (LOADER_GLOBALS.SHOW_ACTION_BUTTON) {
           let node = document.createElement("div");
@@ -91,7 +128,6 @@ function WalletRunner(options) {
           }, 3000)
         }
 
-        this.spinner.removeFromView();
         document.dispatchEvent(new CustomEvent('ssapp:loading:progress', {
           detail: {
             progress: 100,
@@ -160,7 +196,7 @@ function WalletRunner(options) {
       }
       this.spinner.setStatusText(statusText);
 
-      if (progress === 100) {
+      if (progress === 100 && !this.isLazySpinner) {
         this.spinner.removeFromView();
       }
     });
