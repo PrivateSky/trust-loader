@@ -428,10 +428,6 @@ label.error {
     margin-top: 15px;
 }
 
-#access-wallet {
-    width: 60%;
-}
-
 #print-area .fa-copy {
     font-size: 22px;
 }
@@ -494,8 +490,6 @@ label.error {
         color: black;
         visibility: visible;
         font-weight: bold;
-        border: 1px solid #C6D0D9;
-        border-radius: 8px
     }
 
 
