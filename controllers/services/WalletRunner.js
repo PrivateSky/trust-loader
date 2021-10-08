@@ -63,6 +63,31 @@ function WalletRunner(options) {
       return {seed: this.seed};
     });
 
+    const removeSpinner = () => {
+      const spinner = document.querySelector('.loader-parent-container');
+      if (spinner) {
+        spinner.remove();
+      }
+      this.spinner.removeFromView();
+      iframe.hidden = false;
+    }
+
+    const keepSpinner = ()=>{
+      const fragment = iframe.contentWindow.document;
+      if (!fragment) {
+        return removeSpinner();
+      }
+
+      const root = fragment.querySelector('webc-app-root') || fragment.querySelector('psk-app-root');
+      if (!root) {
+        return removeSpinner();
+      }
+
+      root.componentOnReady().then(()=>{
+        removeSpinner();
+      });
+    }
+
 
     eventMiddleware.onStatus("completed", () => {
       if (iframe.hasAttribute("app-placeholder")) {
@@ -73,29 +98,9 @@ function WalletRunner(options) {
               .querySelectorAll("body > *:not(.loader-parent-container)")
               .forEach((node) => node.remove());
 
-          const removeSpinner = () => {
-            const spinner = document.querySelector('.loader-parent-container');
-            if (spinner) {
-              spinner.remove();
-            }
-            this.spinner.removeFromView();
-            iframe.hidden = false;
-          }
-
           iframe.hidden = true;
-          iframe.onload = async () => {
-            const fragment = iframe.contentWindow.document;
-            if (!fragment) {
-              return removeSpinner();
-            }
-
-            const root = fragment.querySelector('webc-app-root') || fragment.querySelector('psk-app-root');
-            if (!root) {
-              return removeSpinner();
-            }
-
-            await root.componentOnReady();
-            removeSpinner();
+          iframe.onload = () => {
+            keepSpinner();
           }
           document.body.prepend(iframe);
         } else {
@@ -139,6 +144,7 @@ function WalletRunner(options) {
          * remove all body elements that are related to loader UI except the iframe
          */
         try {
+          keepSpinner();
           document.querySelectorAll("body > *:not(iframe):not(.loader-parent-container)").forEach((node) => node.remove());
         } catch (e) {
           this.spinner.removeFromView();
