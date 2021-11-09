@@ -51,11 +51,13 @@ function MainController() {
 
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-  function getSecretLocalToken(development, mobile) {
+  function getSecretLocalToken(development, mobile, storageKey) {
     if (mobile) {
       return "SuperUserSecurePassword1!";
     }
-    let storageKey = "secretToken";
+    if(typeof storageKey === "undefined"){
+      storageKey = "secretToken";
+    }
 
     if (development) {
       return generateRandom(characters, 32); //new key each time
@@ -117,18 +119,29 @@ function MainController() {
     if (!LOADER_GLOBALS.credentials.isValid) {
       try {
         let credentials = {};
-        if (!development) {
-          credentials.email = "wallet@invisible";
-          credentials.password = getSecretLocalToken(development, mobile);
-          credentials.username = "private";
-          credentials.company = "OpenDSU Development INC.";
+
+        //config provided-credentials
+        //written to keep backwards-compatibility
+        //TODO why we use different email/username constants?
+        if (typeof LOADER_GLOBALS.DEFAULT_CREDENTIALS !== "object") {
+          if (!development) {
+            credentials.email = "wallet@invisible";
+            credentials.password = getSecretLocalToken(development, mobile);
+            credentials.username = "private";
+            credentials.company = "OpenDSU Development INC.";
+          } else {
+            credentials.email = DEVELOPMENT_EMAIL;
+            credentials.password = getSecretLocalToken(development, mobile);
+            credentials.username = DEVELOPMENT_USERNAME;
+            credentials.company = "OpenDSU Development INC.";
+          }
+          LOADER_GLOBALS.credentials = credentials;
         } else {
-          credentials.email = DEVELOPMENT_EMAIL;
-          credentials.password = getSecretLocalToken(development, mobile);
-          credentials.username = DEVELOPMENT_USERNAME;
-          credentials.company = "OpenDSU Development INC.";
+          let defaultCredentials = JSON.parse(JSON.stringify(LOADER_GLOBALS.DEFAULT_CREDENTIALS));
+          defaultCredentials.password = getSecretLocalToken(development, mobile,defaultCredentials.password);
+          LOADER_GLOBALS.credentials = defaultCredentials;
         }
-        LOADER_GLOBALS.credentials = credentials;
+
         LOADER_GLOBALS.credentials.isValid = true;
 
         if (!development) {

@@ -1,4 +1,10 @@
 let LOADER_GLOBALS = {
+ DEFAULT_CREDENTIALS:{
+    email:"wallet@opendsu.com",
+    password:"secret",
+    username : "private",
+    company:"OpenDSU Development INC."
+  },
   THEME: "app",
   REGISTRATION_FIELDS: [
     {
