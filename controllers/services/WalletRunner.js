@@ -15,27 +15,19 @@ function getIFrameBase() {
 
 function WalletRunner(options) {
   options = options || {};
-  window.onload = (event) => {
-    console.log('page is fully loaded');
-  };
+
   if (!options.seed) {
     throw new Error("Missing seed");
   }
   this.seed = options.seed;
   this.hash = crypto.sha256(this.seed);
   this.spinner = options.spinner;
-  if (typeof options.isLazySpinner === 'boolean') {
-    this.isLazySpinner = options.isLazySpinner;
-  } else {
-    this.isLazySpinner = true;
-  }
 
   /**
-   * Builds the iframe container
-   * for the SSApp
+   * Builds the iframe container for the SSApp
    * @return {HTMLIFrameElement}
    */
-  const buildContainerIframe = (useSeedForIframeSource) => {
+  const createContainerIframe = (useSeedForIframeSource) => {
     const iframe = document.createElement("iframe");
 
     //iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms");
@@ -55,101 +47,109 @@ function WalletRunner(options) {
     return iframe;
   };
 
+  const setupLoadEventsListener = (iframeElement) => {
+    const removeElementsFromUI = (elements) => {
+      const removeSpinner = () => {
+        const spinnerElement = document.querySelector('.loader-parent-container');
+        if (spinnerElement) {
+          spinnerElement.remove();
+        }
+        this.spinner.removeFromView();
+      }
 
-  const setupLoadEventsListener = (iframe) => {
-    let eventMiddleware = new EventMiddleware(iframe, this.hash);
+      let { iframe, spinner, rest } = elements || {};
+
+      if (typeof iframe !== 'boolean') {
+        iframe = false;
+      }
+      if (typeof spinner !== 'boolean') {
+        spinner = false;
+      }
+      if (typeof rest !== 'boolean') {
+        rest = true;
+      }
+
+      if (iframe && spinner && rest) {
+        document.body.innerHTML = '';
+        return;
+      }
+
+      if (iframe) {
+        iframeElement.remove();
+      }
+
+      if (spinner) {
+        removeSpinner();
+      }
+
+      try {
+        if (rest) {
+          document
+              .querySelectorAll("body > *:not(iframe):not(.loader-parent-container)")
+              .forEach((node) => node.remove());
+        }
+      } catch (error) {
+        // some UI Elements could not be found
+      }
+    }
+
+    const appendElementsToUI = (elements) => {
+      const appendActionButtonToUI = () => {
+        let node = document.createElement("div");
+        node.className = "app-action-button";
+        let options = document.createElement("ul");
+        options.className="hidden";
+        LOADER_GLOBALS.saveCredentials();
+        Object.keys(LOADER_GLOBALS.ACTION_BUTTON_OPTIONS).forEach(key => {
+          let liElem = document.createElement("li");
+          liElem.onclick = ActionsRegistry.getAction([(LOADER_GLOBALS.ACTION_BUTTON_OPTIONS[key].action)]);
+          liElem.innerHTML = `<div>${LOADER_GLOBALS.ACTION_BUTTON_OPTIONS[key].label}</div>`;
+          options.appendChild(liElem);
+        })
+        let actionButton = document.createElement("div");
+        actionButton.className = "float";
+        actionButton.id = "menu-share";
+        actionButton.innerHTML = "...";
+        node.appendChild(actionButton);
+        node.appendChild(options);
+        actionButton.addEventListener('click', (event) => {
+          document.querySelector(".app-action-button div#menu-share + ul").classList.toggle('hidden');
+        });
+        setTimeout(function () {
+          document.body.appendChild(node);
+        }, 3000)
+      }
+
+      let { actionButton } = elements || {};
+
+      if (typeof actionButton !== 'boolean') {
+        actionButton = false;
+      }
+
+      if (actionButton) {
+        appendActionButtonToUI();
+      }
+    }
+
+    const eventMiddleware = new EventMiddleware(iframeElement, this.hash);
 
     eventMiddleware.registerQuery("seed", () => {
-      return {seed: this.seed};
+      return { seed: this.seed };
     });
 
-    const removeSpinner = () => {
-      const spinner = document.querySelector('.loader-parent-container');
-      if (spinner) {
-        spinner.remove();
-      }
-      this.spinner.removeFromView();
-      iframe.hidden = false;
-    }
-
-    const keepSpinner = ()=>{
-      const fragment = iframe.contentWindow.document;
-      if (!fragment) {
-        return removeSpinner();
-      }
-
-      const root = fragment.querySelector('webc-app-root') || fragment.querySelector('psk-app-root');
-      if (!root) {
-        return removeSpinner();
-      }
-
-      root.componentOnReady().then(()=>{
-        removeSpinner();
-      });
-    }
-
-
     eventMiddleware.onStatus("completed", () => {
-      if (iframe.hasAttribute("app-placeholder")) {
-        iframe.removeAttribute("app-placeholder");
-
-        if (this.isLazySpinner) {
-          document
-              .querySelectorAll("body > *:not(.loader-parent-container)")
-              .forEach((node) => node.remove());
-
-          iframe.hidden = true;
-          iframe.onload = () => {
-            keepSpinner();
-          }
-          document.body.prepend(iframe);
-        } else {
-          document.body.innerHTML = iframe.outerHTML;
-        }
-
-        if (LOADER_GLOBALS.SHOW_ACTION_BUTTON) {
-          let node = document.createElement("div");
-          node.className = "app-action-button";
-          let options = document.createElement("ul");
-          options.className="hidden";
-          LOADER_GLOBALS.saveCredentials();
-          Object.keys(LOADER_GLOBALS.ACTION_BUTTON_OPTIONS).forEach(key => {
-            let liElem = document.createElement("li");
-            liElem.onclick = ActionsRegistry.getAction([(LOADER_GLOBALS.ACTION_BUTTON_OPTIONS[key].action)]);
-            liElem.innerHTML = `<div>${LOADER_GLOBALS.ACTION_BUTTON_OPTIONS[key].label}</div>`;
-            options.appendChild(liElem);
-          })
-          let actionButton = document.createElement("div");
-          actionButton.className = "float";
-          actionButton.id = "menu-share";
-          actionButton.innerHTML = "...";
-          node.appendChild(actionButton);
-          node.appendChild(options);
-          actionButton.addEventListener('click', (event) => {
-            document.querySelector(".app-action-button div#menu-share + ul").classList.toggle('hidden');
-          });
-          setTimeout(function () {
-            document.body.appendChild(node);
-          }, 3000)
-        }
-
-        document.dispatchEvent(new CustomEvent('ssapp:loading:progress', {
-          detail: {
-            progress: 100,
-            status: 'Wallet Loaded<br />Loading SSApp...'
-          }
-        }));
-      } else {
-        /**
-         * remove all body elements that are related to loader UI except the iframe
-         */
-        try {
-          keepSpinner();
-          document.querySelectorAll("body > *:not(iframe):not(.loader-parent-container)").forEach((node) => node.remove());
-        } catch (e) {
-          this.spinner.removeFromView();
-        }
+      // "app-placeholder" is injected by service worker
+      // in that case 2 completed events are emitted
+      if (iframeElement.hasAttribute("app-placeholder")) {
+        removeElementsFromUI({ iframe: true, spinner: false, rest: false });
+        iframeElement.removeAttribute("app-placeholder");
+        document.body.prepend(iframeElement);
+        return;
       }
+
+      removeElementsFromUI({ spinner: true });
+      iframeElement.hidden = false;
+      appendElementsToUI({ actionButton: !!LOADER_GLOBALS.SHOW_ACTION_BUTTON });
     });
 
     eventMiddleware.onStatus("sign-out", (data) => {
@@ -165,11 +165,43 @@ function WalletRunner(options) {
     eventMiddleware.onStatus("error", () => {
       throw new Error("Unable to load application");
     });
+
+    iframeElement.hidden = true;
   };
 
+  const sendCompletedEvent = (iframeElement) => {
+    const iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
+    if (iframeDocument.readyState !== 'complete') {
+      console.log('Event "completed" can be emitted only when iframe is loaded!');
+      return;
+    }
+
+    const iframeIdentity = iframeElement.getAttribute('identity');
+    if (!iframeIdentity) {
+      console.log('Event "completed" can not be emitted if no identity was found!');
+      return;
+    }
+
+    const isWebCardinalRoot = !!iframeDocument.querySelector('webc-app-root');
+    if (isWebCardinalRoot) {
+      // WebCardinal sends completed event automatically, when the app is fully loaded
+      return;
+    }
+
+    const CompletedEvent = new CustomEvent(iframeIdentity, { detail: { status: 'completed' }});
+
+    const pskCardinalRoot = iframeDocument.querySelector('webc-app-root');
+    if (pskCardinalRoot) {
+      // Send completed event when psk-app-root is "on ready"
+      pskCardinalRoot.componentOnReady().then(() => document.dispatchEvent(CompletedEvent));
+      return;
+    }
+
+    document.dispatchEvent(CompletedEvent);
+  }
+
   /**
-   * Post back the seed if the service worker
-   * requests it
+   * Post back the seed if the service worker requests it
    */
   const setupSeedRequestListener = () => {
     NavigatorUtils.addServiceWorkerEventListener("message", (e) => {
@@ -186,10 +218,8 @@ function WalletRunner(options) {
     });
   };
 
-
   /**
-   * Toggle the loading spinner based on the loading
-   * progress of ssapps
+   * Toggle the loading spinner based on the loading progress of ssapps
    */
   const setupLoadingProgressEventListener = () => {
     document.addEventListener('ssapp:loading:progress', (e) => {
@@ -202,29 +232,29 @@ function WalletRunner(options) {
       }
       this.spinner.setStatusText(statusText);
 
-      if (progress === 100 && !this.isLazySpinner) {
+      if (progress === 100) {
         this.spinner.removeFromView();
       }
     });
   }
 
-  this.run = function () {
+  this.run = () => {
     const areServiceWorkersEnabled = typeof LOADER_GLOBALS === "undefined" || !!LOADER_GLOBALS.environment.sw;
     if (areServiceWorkersEnabled && !NavigatorUtils.areServiceWorkersSupported) {
       return alert("You current browser doesn't support running this application");
     }
 
-    const iframe = buildContainerIframe(!areServiceWorkersEnabled);
-    setupLoadEventsListener(iframe);
+    const iframeElement = createContainerIframe(!areServiceWorkersEnabled);
+
+    setupLoadEventsListener(iframeElement);
 
     if (!areServiceWorkersEnabled) {
-      let loadingInterval;
+      let loadingInterval, loadingProgress = 10;
 
-      let loadingProgress = 10;
       this.spinner.setStatusText(`Loading ${loadingProgress}%`);
+
       loadingInterval = setInterval(() => {
         loadingProgress += loadingProgress >= 90 ? 1 : 10;
-
         if (loadingProgress >= 100) {
           clearInterval(loadingInterval);
           return;
@@ -232,35 +262,32 @@ function WalletRunner(options) {
         this.spinner.setStatusText(`Loading ${loadingProgress}%`);
       }, 1000);
 
-
-      iframe.onload = () => {
+      iframeElement.addEventListener('load', () => {
         clearInterval(loadingInterval);
-        this.spinner.removeFromView();
-      };
-      document.body.appendChild(iframe);
+        sendCompletedEvent(iframeElement);
+      });
 
+      document.body.appendChild(iframeElement);
       NavigatorUtils.registerPwaServiceWorker();
       return;
     }
 
     setupSeedRequestListener();
+
     setupLoadingProgressEventListener();
 
     NavigatorUtils.unregisterAllServiceWorkers(() => {
       NavigatorUtils.registerSW(
-        {
-          name: "swLoader.js",
-          path: "swLoader.js",
-          scope: getIFrameBase(),
-        },
-        (err, result) => {
-          if (err) {
-            throw err;
+        { name: "swLoader.js", path: "swLoader.js", scope: getIFrameBase() },
+        (error) => {
+          if (error) {
+            throw error;
           }
-          iframe.onload = () => {
+          iframeElement.addEventListener('load', () => {
             NavigatorUtils.registerPwaServiceWorker();
-          };
-          document.body.appendChild(iframe);
+            sendCompletedEvent(iframeElement);
+          });
+          document.body.appendChild(iframeElement);
         }
       );
     });
