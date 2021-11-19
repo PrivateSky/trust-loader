@@ -190,14 +190,11 @@ function WalletRunner(options) {
 
     const CompletedEvent = new CustomEvent(iframeIdentity, { detail: { status: 'completed' }});
 
-    const pskCardinalRoot = iframeDocument.querySelector('webc-app-root');
+    const pskCardinalRoot = iframeDocument.querySelector('psk-app-root');
     if (pskCardinalRoot) {
       // Send completed event when psk-app-root is "on ready"
       pskCardinalRoot.componentOnReady().then(() => document.dispatchEvent(CompletedEvent));
-      return;
     }
-
-    document.dispatchEvent(CompletedEvent);
   }
 
   /**
