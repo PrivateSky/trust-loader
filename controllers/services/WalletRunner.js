@@ -47,6 +47,12 @@ function WalletRunner(options) {
     return iframe;
   };
 
+  const createTimerElement = () => {
+    const script = document.createElement('script');
+    script.src = "./controllers/services/Timer.js";
+    return script;
+  }
+
   const setupLoadEventsListener = (iframeElement) => {
     const removeElementsFromUI = (elements) => {
       const removeSpinner = () => {
@@ -265,6 +271,8 @@ function WalletRunner(options) {
       });
 
       document.body.appendChild(iframeElement);
+      const timerElement = createTimerElement();
+      document.body.appendChild(timerElement);
       NavigatorUtils.registerPwaServiceWorker();
       return;
     }
