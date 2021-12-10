@@ -1,7 +1,6 @@
-setInterval(() => {
-    console.log(document.cookie);
+const handler = setInterval(() => {
     if (!document.cookie.includes("accessTokenCookie") && document.cookie.includes("isActiveSession")) {
-        clearInterval();
+        clearInterval(handler);
         window.location = "/logout"
     }
 }, 1000);
