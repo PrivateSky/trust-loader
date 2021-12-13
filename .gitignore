@@ -8,3 +8,5 @@ loader-config.local.json
 /config-constants.js
 /environment.js
 !/workbox-config.js
+package-lock.json
+/assets/images-pwa
