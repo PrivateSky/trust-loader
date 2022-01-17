@@ -9,7 +9,9 @@ export default{
   "stage":  "release",
   "sw": true,
   "pwa":false,
-  "allowPinLogin": false
+  "allowPinLogin": false,
+  "companyName": "Company Inc"
+
 }
 
 /*

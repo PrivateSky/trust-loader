@@ -25,8 +25,7 @@ export default {
             type: "text",
             validator: "anyChar",
             fieldLabel: "Company Name",
-            placeholder: "Enter your company name",
-            fieldHelp: "Company name is mandatory"
+            placeholder: "Enter your company name"
         },
         {
             visible: true,

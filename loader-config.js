@@ -165,6 +165,14 @@ let patchConfiguration = (existingConfiguration, requiredConfiguration) => {
 }
 
 patchConfiguration(LOADER_GLOBALS, DEFAULT_APP_CONFIG);
+
+if (LOADER_GLOBALS.environment.companyName) {
+  let companyField = LOADER_GLOBALS.REGISTRATION_FIELDS.find(item => item.fieldId === "company");
+  if (companyField) {
+    companyField.readonly = true;
+  }
+}
+
 LOADER_GLOBALS.loadCredentials();
 
 if (missingConfiguration) {

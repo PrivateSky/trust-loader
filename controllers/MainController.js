@@ -202,7 +202,7 @@ function MainController() {
     if (LOADER_GLOBALS.environment.mode === "dev-secure" && !LOADER_GLOBALS.credentials.username) {
       LOADER_GLOBALS.credentials.username = "devuser"
       LOADER_GLOBALS.credentials.email = "dev@user.dev";
-      LOADER_GLOBALS.credentials.company = "Company Inc";
+      LOADER_GLOBALS.credentials.company = LOADER_GLOBALS.environment.companyName || "Company Inc";
       LOADER_GLOBALS.credentials.password = "SuperUserSecurePassword1!";
     }
 

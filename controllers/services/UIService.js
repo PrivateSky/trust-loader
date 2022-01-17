@@ -123,7 +123,7 @@ function createFormElement(fieldOptions, controllerOptions) {
   const placeholder = fieldOptions.placeholder || "";
   const fieldLabel = fieldOptions.fieldLabel || "";
   const validator = fieldOptions.validator ? "validator." + fieldOptions.validator + "(event)" : "";
-  const readonly = controllerOptions.readonly ? "readonly" : "";
+  const readonly = controllerOptions.readonly || fieldOptions.readonly ? "readonly" : "";
   const inputValue = controllerOptions.value || "";
   let element = document.createElement("div");
   element.classList.add('form-group', 'mb-1');
