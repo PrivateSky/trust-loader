@@ -49,7 +49,7 @@ function MainController() {
    * Run the loader using credentials provided from external source
    * These credentials should be stored in the localStorage before
    */
-  function runExternalAutologin() {
+  const runExternalAutologin = () => {
     this.spinner.attachToView();
     LOADER_GLOBALS.loadCredentials();
     const secretArrayKey = getWalletSecretArrayKey();
@@ -74,7 +74,7 @@ function MainController() {
    * Create a default wallet with a default password if none exists
    * and load it
    */
-  function runInDevelopment() {
+  const runInDevelopment = () => {
     runInAutologin(true);
   }
 
@@ -84,7 +84,7 @@ function MainController() {
    * Create a default wallet with a default password if none exists
    * and load it
    */
-  function runInAutologin(development, mobile) {
+  const runInAutologin = (development, mobile) =>{
     this.spinner.attachToView();
     if (!LOADER_GLOBALS.credentials.isValid) {
       try {
@@ -138,7 +138,7 @@ function MainController() {
     });
   }
 
-  function runInMobileAutologin() {
+  const runInMobileAutologin = () => {
     return runInAutologin(false, true);
   }
 
