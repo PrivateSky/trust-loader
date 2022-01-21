@@ -1,3 +1,44 @@
+<style>
+    #sso-pin-title {
+        font-size: 120%;
+        margin-bottom: 10px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .buttons-row {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .buttons-row > .btn {
+        margin: 10px 0px;
+        width: 65px;
+    }
+
+    .input-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0px;
+    }
+
+    .number-input {
+        display: inline-block;
+        height: 35px;
+        width: 35px;
+        border: 1px solid #FFFFFF;
+        font-size: 2em;
+        line-height: 1.2em;
+        text-align: center;
+    }
+
+    #pin-numpad {
+        min-width: 265px;
+    }
+
+</style>
 <html>
 <head>
     <title></title>
@@ -11,7 +52,6 @@
     <script src="assets/js/stepper.min.js"></script>
     <link href="assets/css/stepper.min.css" rel="stylesheet" type="text/css"/>
     <link href="assets/fontawesome-free-5.12.1-web/css/all.min.css" rel="stylesheet" type="text/css"/>
-
 </head>
 <body style="display: none">
 <div class="wizard-container">
@@ -34,6 +74,101 @@
             </div>
         </div>
         <div class="bs-stepper-content set-register-details-content">
+            <div class="d-flex flex-column align-items-center">
+                <div class="btn-group-vertical ml-4 mt-4 d-none" id="pin-numpad" role="group">
+                    <span id="sso-pin-title">Choose a pin for your wallet</span>
+                    <div class="input-wrapper">
+                        <span class="number-input text-secondary"></span>
+                        <span class="number-input text-secondary"></span>
+                        <span class="number-input text-secondary"></span>
+                        <span class="number-input text-secondary"></span>
+                        <span class="number-input text-secondary"></span>
+                        <span class="number-input text-secondary"></span>
+                    </div>
+                    <div class="buttons-row">
+                        <input class="text-center form-control-lg mb-2 w-100" hidden id="sso-pincode" maxlength="6"
+                               minlength="6"
+                               oninput="controller.pinUpdate(event)"
+                               pattern="\d*" type="text">
+
+                    </div>
+                    <div class="buttons-row">
+                        <button class="btn btn-outline-secondary" id="btn-1"
+                                onclick="controller.pinUpdate(1)"
+                                type="button">
+                            1
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                id="btn-2"
+                                onclick="controller.pinUpdate(2)"
+                                type="button">
+                            2
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                id="btn-3"
+                                onclick="controller.pinUpdate(3)"
+                                type="button">
+                            3
+                        </button>
+                    </div>
+                    <div class="buttons-row">
+                        <button class="btn btn-outline-secondary"
+                                id="btn-4"
+                                onclick="controller.pinUpdate(4)"
+                                type="button">
+                            4
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                id="btn-5"
+                                onclick="controller.pinUpdate(5)"
+                                type="button">
+                            5
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                id="btn-6"
+                                onclick="controller.pinUpdate(6)"
+                                type="button">
+                            6
+                        </button>
+                    </div>
+                    <div class="buttons-row">
+                        <button class="btn btn-outline-secondary"
+                                id="btn-7"
+                                onclick="controller.pinUpdate(7)"
+                                type="button">
+                            7
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                id="btn-8"
+                                onclick="controller.pinUpdate(8)"
+                                type="button">
+                            8
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                id="btn-9"
+                                onclick="controller.pinUpdate(9)"
+                                type="button">
+                            9
+                        </button>
+                    </div>
+                    <div class="buttons-row">
+                        <button class="btn btn-outline-secondary"
+                                id="btn-del"
+                                onclick="controller.pinUpdate('del')"
+                                type="button">
+                            &lt;
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                id="btn-0"
+                                onclick="controller.pinUpdate(0)"
+                                type="button">
+                            0
+                        </button>
+                        <button class="btn btn-primary" onclick="controller.submitSSOPin(event)" type="button"><i
+                                class="fa fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
             <div aria-labelledby="stepper1trigger2" class="bs-stepper-pane" id="register-details-step" role="tabpanel">
                 <form onSubmit="controller.submitPassword(event)">
                     <div id="more-information"></div>
@@ -72,7 +207,8 @@
                     </div>
 
                     <div class="form-group w-100 d-flex flex-column recovery-code-container">
-                        <div class="text-center">Please write your recovery code down on paper and keep it in a safe, offline place.
+                        <div class="text-center">Please write your recovery code down on paper and keep it in a safe,
+                            offline place.
                             Never share your recovery code with anyone and never share it in any online website or
                             service.
                         </div>

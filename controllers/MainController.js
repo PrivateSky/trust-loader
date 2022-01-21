@@ -4,6 +4,10 @@ import WalletService from "./services/WalletService.js";
 import FileService from "./services/FileService.js";
 import WalletRunner from "./services/WalletRunner.js";
 import getVaultDomain from "../utils/getVaultDomain.js";
+import {decrypt, generateRandom, createXMLHttpRequest} from "../utils/utils.js";
+
+const fileService = new FileService();
+
 function MainController() {
 
   let USER_DETAILS_FILE = "user-details.json";
@@ -11,60 +15,26 @@ function MainController() {
   const DEVELOPMENT_USERNAME = "autologin";
 
   const walletService = new WalletService();
-  const fileService = new FileService();
-  let spinner;
+  this.spinner = null;
 
   this.formFields = [];
   const self = this;
 
-  /**
-   * Return path to file relative to the `loader` folder
-   *
-   * @param {string} file
-   * @return {string}
-   */
-  function getUrl(file) {
-    let pathSegments = window.location.pathname.split("/");
-    let loaderPath = pathSegments.pop();
-    if (!loaderPath) {
-      loaderPath = pathSegments.pop();
-    }
-
-    return `${loaderPath}/${file}`;
-  }
-
-
-  function hash(arr) {
-    const crypto = require("opendsu").loadApi("crypto");
-    let hsh = crypto.sha256(encodeURI(arr.join("/")));
-    return hsh;
-  }
-
-  function generateRandom(charactersSet, length) {
-    let result = '';
-    const charactersLength = charactersSet.length;
-    for (let i = 0; i < length; i++) {
-      result += charactersSet.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  }
-
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
   function getSecretLocalToken(development, mobile, storageKey) {
     if (mobile) {
       return "SuperUserSecurePassword1!";
     }
-    if(typeof storageKey === "undefined"){
+    if (typeof storageKey === "undefined") {
       storageKey = "secretToken";
     }
 
     if (development) {
-      return generateRandom(characters, 32); //new key each time
+      return generateRandom(32); //new key each time
     }
     let secret = localStorage.getItem(storageKey);
     if (!secret) {
-      secret = generateRandom(characters, 32);
+      secret = generateRandom(32);
       localStorage.setItem(storageKey, secret);
     }
     return secret;
@@ -80,7 +50,7 @@ function MainController() {
    * These credentials should be stored in the localStorage before
    */
   function runExternalAutologin() {
-    spinner.attachToView();
+    this.spinner.attachToView();
     LOADER_GLOBALS.loadCredentials();
     const secretArrayKey = getWalletSecretArrayKey();
     const isArrayEmpty = secretArrayKey.filter(el => el && el.trim().length !== 0).length === 0;
@@ -115,7 +85,7 @@ function MainController() {
    * and load it
    */
   function runInAutologin(development, mobile) {
-    spinner.attachToView();
+    this.spinner.attachToView();
     if (!LOADER_GLOBALS.credentials.isValid) {
       try {
         let credentials = {};
@@ -138,7 +108,7 @@ function MainController() {
           LOADER_GLOBALS.credentials = credentials;
         } else {
           let defaultCredentials = JSON.parse(JSON.stringify(LOADER_GLOBALS.DEFAULT_CREDENTIALS));
-          defaultCredentials.password = getSecretLocalToken(development, mobile,defaultCredentials.password);
+          defaultCredentials.password = getSecretLocalToken(development, mobile, defaultCredentials.password);
           LOADER_GLOBALS.credentials = defaultCredentials;
         }
 
@@ -173,7 +143,7 @@ function MainController() {
   }
 
   this.initSpinner = function () {
-    spinner = new Spinner(document.getElementsByTagName("body")[0]);
+    this.spinner = new Spinner(document.getElementsByTagName("body")[0]);
   }
 
   this.init = function () {
@@ -228,6 +198,7 @@ function MainController() {
   this.pinCheckboxHandler = function (event) {
     LOADER_GLOBALS.loadPinCodeCredentials(LOADER_GLOBALS.getLastPinCode());
     document.getElementById("pin-container").classList.add("d-none");
+
     this.createForm();
     this.populateForm();
     this.loginWithPin = false;
@@ -273,35 +244,19 @@ function MainController() {
     });
   }
 
-  this.openWallet = function (event) {
-    if (this.loginWithPin) {
-      LOADER_GLOBALS.clearCredentials();
-      const pinCode = document.getElementById("pincode").value;
-      if (LOADER_GLOBALS.pinCodeExists(pinCode)) {
-        LOADER_GLOBALS.loadPinCodeCredentials(pinCode);
-      }
-    }
-
-    if (event) {
-      event.preventDefault();
-    }
-    if (spinner) {
-      spinner.attachToView();
-      spinner.setStatusText("Opening wallet...");
-    }
-
-    this.formFields.forEach(field => {
-      if (field !== "confirm-password") {
-        LOADER_GLOBALS.credentials[field] = document.getElementById(field).value;
-      }
-    })
-
+  this.loadWallet = function () {
     walletService.load(getVaultDomain(), getWalletSecretArrayKey(), (err, wallet) => {
       if (err) {
-        spinner.removeFromView();
+        this.spinner.removeFromView();
         console.error("Failed to load the wallet in domain:", getVaultDomain(), getWalletSecretArrayKey(), err.message);
         const errText = err.type === "ServiceWorkerError" ? err.message : "Invalid credentials";
-        return (document.getElementById("register-details-error").innerText = errText);
+        if (document.getElementById("register-details-error")) {
+          document.getElementById("register-details-error").innerText = errText
+        }
+        if (document.getElementById("sso-pin-error")) {
+          document.getElementById("sso-pin-error").innerText = errText
+        }
+        return;
       }
 
       let writableWallet = wallet;
@@ -330,31 +285,151 @@ function MainController() {
 
         new WalletRunner({
           seed: keySSI,
-          spinner
+          spinner: self.spinner
         }).run();
       });
     });
+  }
+
+  this.openWallet = function (event) {
+    if (this.loginWithPin) {
+      LOADER_GLOBALS.clearCredentials();
+      const pinCode = document.getElementById("pincode").value;
+      if (LOADER_GLOBALS.pinCodeExists(pinCode)) {
+        LOADER_GLOBALS.loadPinCodeCredentials(pinCode);
+      }
+    }
+
+    if (event) {
+      event.preventDefault();
+    }
+    if (this.spinner) {
+      this.spinner.attachToView();
+      this.spinner.setStatusText("Opening wallet...");
+    }
+
+    this.formFields.forEach(field => {
+      if (field !== "confirm-password") {
+        LOADER_GLOBALS.credentials[field] = document.getElementById(field).value;
+      }
+    })
+    this.loadWallet();
+
   };
+
+  this.pinUpdate = function (value) {
+    this.pinInput = document.getElementById('sso-pincode');
+
+    if (value !== 'del' && this.pinInput.value.length < 6) {
+      this.pinInput.value = this.pinInput.value + value;
+    }
+
+    if (value === 'del' && this.pinInput.value.length <= 6) {
+      this.pinInput.value = this.pinInput.value.slice(0, -1);
+    }
+
+    if (this.pinInput.value.length <= 6) {
+      Array.from(document.getElementsByClassName('number-input')).forEach((item, index) => {
+        item.innerText = this.pinInput.value[index] || "";
+      })
+    }
+  }
+
+  this.openSSOWallet = function (userId, secret) {
+    LOADER_GLOBALS.clearCredentials();
+    LOADER_GLOBALS.credentials.username = userId;
+    LOADER_GLOBALS.credentials.ssokey = secret;
+    this.loadWallet();
+  }
+
+  this.submitSSOPin = function (event) {
+    let pin = document.getElementById('sso-pincode').value;
+    try {
+      let secret = decrypt(pin, this.ssoEncryptedSecret);
+      this.openSSOWallet(this.userId, secret);
+    } catch (e) {
+      if (document.getElementById("sso-pin-error")) {
+        document.getElementById("sso-pin-error").innerText = "Invalid credentials"
+      }
+    }
+  };
+
+  this.sendSSOGetRequest = function (userId) {
+    let url = `${fileService.constructUrlBase("getSecret/")}/${userId}`;
+    createXMLHttpRequest(url, "GET", (err, result) => {
+      if (err || !result) {
+        const basePath = window.location.href.split("loader")[0];
+        window.location.replace(basePath + "loader/newWallet.html");
+      } else {
+        if (LOADER_GLOBALS.environment.mode === "sso-pin") {
+          this.ssoEncryptedSecret = JSON.parse(result).secret;
+          this.spinner.removeFromView();
+          document.getElementById("pin-numpad").classList.remove("d-none");
+          document.addEventListener('keydown', (event) => {
+            switch (event.key) {
+              case '0':
+              case '1':
+              case '2':
+              case '3':
+              case '4':
+              case '5':
+              case '6':
+              case '7':
+              case '8':
+              case '9':
+                document.getElementById('btn-' + event.key).focus();
+                document.getElementById('btn-' + event.key).click();
+                setTimeout(() => {
+                  document.getElementById('btn-' + event.key).blur()
+                }, 300)
+
+                break;
+              case 'Delete':
+              case 'Backspace':
+                document.getElementById('btn-del').focus();
+                document.getElementById('btn-del').click();
+                setTimeout(() => {
+                  document.getElementById('btn-del').blur();
+                }, 300)
+                break;
+            }
+          });
+        } else {
+          let secret = decrypt(LOADER_GLOBALS.DEFAULT_PIN, JSON.parse(result).secret);
+          this.openSSOWallet(this.userId, secret);
+        }
+      }
+    }).send();
+  }
 
 }
 
 const controller = new MainController();
 
+
 document.addEventListener("DOMContentLoaded", function () {
-
-  if (LOADER_GLOBALS.hasPinCodes()) {
-    document.getElementById("pin-container").classList.remove("d-none");
-    document.getElementById("open-wallet-btn").removeAttribute("disabled");
-    controller.init();
-    controller.loginWithPin = true;
+  if (LOADER_GLOBALS.environment.mode === "sso-direct" || LOADER_GLOBALS.environment.mode === "sso-pin") {
+    //to do get form ssooauth
+    controller.userId = localStorage.getItem("SSOUserId") || "ssoDefaultUser";
+    controller.initSpinner();
+    controller.spinner.attachToView();
+    controller.sendSSOGetRequest(controller.userId);
   } else {
-    controller.createForm();
-    controller.init();
-    controller.populateForm();
-    controller.loginWithPin = false
-  }
+    if (LOADER_GLOBALS.hasPinCodes()) {
+      document.getElementById("pin-container").classList.remove("d-none");
+      document.getElementById("open-wallet-btn").removeAttribute("disabled");
+      controller.init();
+      controller.loginWithPin = true;
+    } else {
+      controller.createForm();
+      controller.init();
+      controller.populateForm();
+      controller.loginWithPin = false
+    }
 
-  prepareViewContent();
+    prepareViewContent();
+  }
 });
+
 
 window.controller = controller;

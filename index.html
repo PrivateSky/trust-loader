@@ -1,4 +1,45 @@
 <!DOCTYPE html>
+<style>
+    #sso-pin-title {
+        font-size: 120%;
+        margin-bottom: 10px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .buttons-row {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .buttons-row > .btn {
+        margin: 10px 0px;
+        width: 65px;
+    }
+
+    .input-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0px;
+    }
+
+    .number-input {
+        display: inline-block;
+        height: 35px;
+        width: 35px;
+        border: 1px solid #FFFFFF;
+        font-size: 2em;
+        line-height: 1.2em;
+        text-align: center;
+    }
+
+    .stepper-content {
+        min-width: 365px;
+    }
+
+</style>
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
@@ -41,17 +82,117 @@
   console.log("Booting SSApp loader...");
 </script>
 <div class="wizard-container">
+
+    <div class="d-flex flex-column align-items-center align-self-center ml-auto mr-auto">
+        <div class="stepper-content d-none  bd-highlight content" id="pin-numpad">
+            <div class="btn-group-vertical mt-4 w-100" role="group">
+                <span id="sso-pin-title">Enter your pin</span>
+                <div class="input-wrapper">
+                    <span class="number-input text-secondary"></span>
+                    <span class="number-input text-secondary"></span>
+                    <span class="number-input text-secondary"></span>
+                    <span class="number-input text-secondary"></span>
+                    <span class="number-input text-secondary"></span>
+                    <span class="number-input text-secondary"></span>
+                </div>
+                <div class="buttons-row">
+                    <input class="text-center form-control-lg mb-2 w-100" hidden id="sso-pincode" type="text">
+                </div>
+                <div class="buttons-row">
+                    <button class="btn btn-outline-secondary" id="btn-1"
+                            onclick="controller.pinUpdate(1)"
+                            type="button">
+                        1
+                    </button>
+                    <button class="btn btn-outline-secondary"
+                            id="btn-2"
+                            onclick="controller.pinUpdate(2)"
+                            type="button">
+                        2
+                    </button>
+                    <button class="btn btn-outline-secondary"
+                            id="btn-3"
+                            onclick="controller.pinUpdate(3)"
+                            type="button">
+                        3
+                    </button>
+                </div>
+                <div class="buttons-row">
+                    <button class="btn btn-outline-secondary"
+                            id="btn-4"
+                            onclick="controller.pinUpdate(4)"
+                            type="button">
+                        4
+                    </button>
+                    <button class="btn btn-outline-secondary"
+                            id="btn-5"
+                            onclick="controller.pinUpdate(5)"
+                            type="button">
+                        5
+                    </button>
+                    <button class="btn btn-outline-secondary"
+                            id="btn-6"
+                            onclick="controller.pinUpdate(6)"
+                            type="button">
+                        6
+                    </button>
+                </div>
+                <div class="buttons-row">
+                    <button class="btn btn-outline-secondary"
+                            id="btn-7"
+                            onclick="controller.pinUpdate(7)"
+                            type="button">
+                        7
+                    </button>
+                    <button class="btn btn-outline-secondary"
+                            id="btn-8"
+                            onclick="controller.pinUpdate(8)"
+                            type="button">
+                        8
+                    </button>
+                    <button class="btn btn-outline-secondary"
+                            id="btn-9"
+                            onclick="controller.pinUpdate(9)"
+                            type="button">
+                        9
+                    </button>
+                </div>
+                <div class="buttons-row">
+                    <button class="btn btn-outline-secondary"
+                            id="btn-del"
+                            onclick="controller.pinUpdate('del')"
+                            type="button">
+                        &lt;
+                    </button>
+                    <button class="btn btn-outline-secondary"
+                            id="btn-0"
+                            onclick="controller.pinUpdate(0)"
+                            type="button">
+                        0
+                    </button>
+                    <button class="btn btn-primary" onclick="controller.submitSSOPin(event)" type="button"><i
+                            class="fa fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="row ml-1 mt-2 text-left">
+                <label class="error" id="sso-pin-error"></label>
+            </div>
+        </div>
+    </div>
     <div class="align-self-center bd-highlight content" id="restore-new-container">
         <div class="title" data-model="APP_NAME" id="loader-title"></div>
         <div class="caption" data-model="APP_DESCRIPTION" id="loader-caption"></div>
         <div class="actions d-flex flex-column align-items-center">
             <a class="btn btn-csb-loader btn-csb-new col-12 col-sm-8 col-md-3 col-xl-2" data-model="NEW_WALLET"
                href="newWallet.html" id="new-wallet" type="button"></a>
-            <a class="btn btn-csb-loader btn-csb-restore col-12 col-sm-8 col-md-3 col-xl-2 mt-2" href="?login"
-               id="access-wallet" type="button" data-model="ACCESS_WALLET"></a>
+            <a class="btn btn-csb-loader btn-csb-restore col-12 col-sm-8 col-md-3 col-xl-2 mt-2"
+               data-model="ACCESS_WALLET"
+               href="?login" id="access-wallet" type="button"></a>
             <!-- temporary hidden for release (22.06.2021) till recovery wallet issue is fixed-->
-            <a class="btn btn-csb-loader btn-csb-restore col-12 col-sm-8 col-md-3 col-xl-2 mt-2" href="recoverWallet.html"
-               id="recover-wallet"  data-model="RECOVER_WALLET"
+            <a class="btn btn-csb-loader btn-csb-restore col-12 col-sm-8 col-md-3 col-xl-2 mt-2"
+               data-model="RECOVER_WALLET"
+               href="recoverWallet.html" id="recover-wallet"
                type="button"></a>
         </div>
 
@@ -60,9 +201,9 @@
     <div class="align-self-center bd-highlight" id="credentials-container">
         <div class="credentials-panel-container">
             <div class="credentials-panel card text-white bg-violet mb-3">
-                <div class="card-header" id="wallet-authorization" data-model="WALLET_AUTHORIZATION"></div>
+                <div class="card-header" data-model="WALLET_AUTHORIZATION" id="wallet-authorization"></div>
                 <div class="card-body">
-                    <h5 class="card-title" id="enter-credentials" data-model="ENTER_CREDENTIALS"></h5>
+                    <h5 class="card-title" data-model="ENTER_CREDENTIALS" id="enter-credentials"></h5>
                     <form class="credentials-panel-action-box" onsubmit="controller.openWallet(event)">
                         <div class="d-none" id="pin-container">
                             <div class="form-group" id="pin-input-container">
@@ -81,8 +222,8 @@
                             <label class="error" id="register-details-error"></label>
                         </div>
                         <div class="buttons-box buttons-box-set-register-details d-flex justify-content-between">
-                            <button class="btn btn-csb-loader btn-csb-new" id="back-btn"
-                                    onclick="controller.goToLandingPage()" data-model="BACK_BUTTON_MESSAGE"
+                            <button class="btn btn-csb-loader btn-csb-new" data-model="BACK_BUTTON_MESSAGE"
+                                    id="back-btn" onclick="controller.goToLandingPage()"
                                     type="button"></button>
                             <button class="btn btn-csb-loader btn-csb-restore float-right"
                                     data-model="OPEN_WALLET"

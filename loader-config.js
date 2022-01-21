@@ -1,5 +1,6 @@
 import configConstants from './config-constants.js';
 import DEFAULT_APP_CONFIG from "./utils/defaultConfigConstants.js";
+import {encrypt, decrypt} from "./utils/utils.js"
 
 window.LOADER_GLOBALS = configConstants;
 
@@ -26,31 +27,6 @@ LOADER_GLOBALS.environment = env;
 LOADER_GLOBALS.LOCALSTORAGE_CREDENTIALS_KEY = env.appName + "-credentials";
 LOADER_GLOBALS.LOCALSTORAGE_PINCODE_KEY = env.appName + "-pincode";
 
-let encrypt = function (key, dataObj) {
-  try {
-    if (typeof require !== 'undefined') {
-      const crypto = require("opendsu").loadAPI("crypto");
-      const encryptionKey = crypto.deriveEncryptionKey(key);
-      const encryptedCredentials = crypto.encrypt(JSON.stringify(dataObj), encryptionKey);
-      return JSON.stringify(encryptedCredentials);
-    }
-  } catch (e) {
-    throw e;
-  }
-}
-
-let decrypt = function (key, dataObj) {
-  try {
-    if (typeof require !== 'undefined') {
-      const crypto = require("opendsu").loadAPI("crypto");
-      const encryptionKey = crypto.deriveEncryptionKey(key);
-      const decryptData = crypto.decrypt($$.Buffer.from(JSON.parse(dataObj)), encryptionKey);
-      return JSON.parse(decryptData.toString());
-    }
-  } catch (e) {
-    throw e
-  }
-}
 
 LOADER_GLOBALS.saveCredentials = function () {
   const encryptedCredentials = encrypt(configConstants.DEFAULT_PIN, LOADER_GLOBALS.credentials);
