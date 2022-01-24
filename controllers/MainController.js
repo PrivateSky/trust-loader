@@ -85,7 +85,7 @@ function MainController() {
    * and load it
    */
   function runInAutologin(development, mobile) {
-    this.spinner.attachToView();
+    self.spinner.attachToView();
     if (!LOADER_GLOBALS.credentials.isValid) {
       try {
         let credentials = {};
