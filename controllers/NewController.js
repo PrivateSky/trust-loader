@@ -3,7 +3,7 @@ import {createFormElement, prepareView, prepareViewContent, Spinner} from "./ser
 import WalletService from "./services/WalletService.js";
 import NavigatorUtils from "./services/NavigatorUtils.js";
 import getVaultDomain from "../utils/getVaultDomain.js";
-import {generateRandom, encrypt, createXMLHttpRequest} from "../utils/utils.js";
+import {createXMLHttpRequest, getCookie, encrypt, generateRandom} from "../utils/utils.js";
 import FileService from "./services/FileService.js";
 
 function NewController() {
@@ -221,23 +221,21 @@ function NewController() {
         item.innerText = this.pinInput.value[index] || "";
       })
     }
-
-
   }
 
   this.submitSSOPin = function (event) {
-    let random = generateRandom(32);
     let pin = document.getElementById('sso-pincode').value;
     this.sendSSOPutRequest(pin);
   };
 
   this.sendSSOPutRequest = function (encryptionKey) {
     const fileService = new FileService();
-    let userId = localStorage.getItem("SSOUserId") || "ssoDefaultUser";
+    let userId = getCookie("SSOUserId");
+    let userEmail = getCookie("SSOUserEmail");
     let url = `${fileService.constructUrlBase("putSecret/")}/${userId}`;
     let secret = generateRandom(32);
-    let encripted = encrypt(encryptionKey, secret);
-    let putData = {secret: JSON.stringify(JSON.parse(encripted).data)};
+    let encrypted = encrypt(encryptionKey, secret);
+    let putData = {secret: JSON.stringify(JSON.parse(encrypted).data)};
     createXMLHttpRequest(url, "PUT", (err) => {
       if (err) {
         alert(`Something went wrong. Couldn't crete credentials for ${userId}.`)
@@ -246,7 +244,8 @@ function NewController() {
       LOADER_GLOBALS.clearCredentials();
       this.spinner = new Spinner(document.getElementsByTagName("body")[0]);
       this.wizard = new Stepper(document.getElementById("psk-wizard"));
-      LOADER_GLOBALS.credentials.username = userId;
+      LOADER_GLOBALS.credentials.username = userEmail;
+      LOADER_GLOBALS.credentials.userId = userId;
       LOADER_GLOBALS.credentials.ssokey = secret;
       this.createWallet("sso");
     }).send(JSON.stringify(putData));

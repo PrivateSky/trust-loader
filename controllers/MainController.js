@@ -4,7 +4,7 @@ import WalletService from "./services/WalletService.js";
 import FileService from "./services/FileService.js";
 import WalletRunner from "./services/WalletRunner.js";
 import getVaultDomain from "../utils/getVaultDomain.js";
-import {decrypt, generateRandom, createXMLHttpRequest} from "../utils/utils.js";
+import {generateRandom, createXMLHttpRequest, getCookie, decrypt} from "../utils/utils.js";
 
 const fileService = new FileService();
 
@@ -84,7 +84,7 @@ function MainController() {
    * Create a default wallet with a default password if none exists
    * and load it
    */
-  const runInAutologin = (development, mobile) =>{
+  const runInAutologin = (development, mobile) => {
     self.spinner.attachToView();
     if (!LOADER_GLOBALS.credentials.isValid) {
       try {
@@ -337,7 +337,8 @@ function MainController() {
 
   this.openSSOWallet = function (userId, secret) {
     LOADER_GLOBALS.clearCredentials();
-    LOADER_GLOBALS.credentials.username = userId;
+    LOADER_GLOBALS.credentials.username = getCookie("SSOUserEmail");
+    LOADER_GLOBALS.credentials.userId = userId;
     LOADER_GLOBALS.credentials.ssokey = secret;
     this.loadWallet();
   }
@@ -410,7 +411,11 @@ const controller = new MainController();
 document.addEventListener("DOMContentLoaded", function () {
   if (LOADER_GLOBALS.environment.mode === "sso-direct" || LOADER_GLOBALS.environment.mode === "sso-pin") {
     //to do get form ssooauth
-    controller.userId = localStorage.getItem("SSOUserId") || "ssoDefaultUser";
+    controller.userId = getCookie("SSOUserId");
+    if (!controller.userId) {
+      alert("UserId not found!!!!");
+      return;
+    }
     controller.initSpinner();
     controller.spinner.attachToView();
     controller.sendSSOGetRequest(controller.userId);

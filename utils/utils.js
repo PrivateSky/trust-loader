@@ -49,6 +49,19 @@ function encrypt(key, dataObj) {
   }
 }
 
+function decrypt(key, dataObj) {
+  try {
+    if (typeof require !== 'undefined') {
+      const crypto = require("opendsu").loadAPI("crypto");
+      const encryptionKey = crypto.deriveEncryptionKey(key);
+      const decryptData = crypto.decrypt($$.Buffer.from(JSON.parse(dataObj)), encryptionKey);
+      return JSON.parse(decryptData.toString());
+    }
+  } catch (e) {
+    throw e
+  }
+}
+
 function createXMLHttpRequest(url, method, callback) {
   let xhr = new XMLHttpRequest();
   xhr.open(method, url);
@@ -65,17 +78,19 @@ function createXMLHttpRequest(url, method, callback) {
   return xhr;
 }
 
-function decrypt(key, dataObj) {
+
+function getCookie(cookieName) {
+  const name = cookieName + "=";
+  let res;
   try {
-    if (typeof require !== 'undefined') {
-      const crypto = require("opendsu").loadAPI("crypto");
-      const encryptionKey = crypto.deriveEncryptionKey(key);
-      const decryptData = crypto.decrypt($$.Buffer.from(JSON.parse(dataObj)), encryptionKey);
-      return JSON.parse(decryptData.toString());
-    }
+    const cookiesArr = decodeURIComponent(document.cookie).split('; ');
+    cookiesArr.forEach(val => {
+      if (val.indexOf(name) === 0) res = val.substring(name.length);
+    })
   } catch (e) {
-    throw e
+    console.log("error on get cookie ", e);
   }
+  return res
 }
 
 export {
@@ -85,5 +100,6 @@ export {
   goToLandingPage,
   encrypt,
   decrypt,
-  createXMLHttpRequest
+  createXMLHttpRequest,
+  getCookie
 }
