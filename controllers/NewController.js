@@ -81,6 +81,7 @@ function NewController() {
   //TODO Refactore and restructure the whole bs...
   function getWalletSecretArrayKey(usePin) {
     let arr = Object.values(LOADER_GLOBALS.credentials).filter(elem => typeof elem !== "boolean");
+    arr.push(LOADER_GLOBALS.environment.appName);
     return arr;
   }
 
