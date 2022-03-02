@@ -254,19 +254,19 @@ function WalletRunner(options) {
     if (!areServiceWorkersEnabled) {
       let loadingInterval, loadingProgress = 10;
 
-      this.spinner.setStatusText(`Loading ${loadingProgress}%`);
+      this.spinner.setStatusText(`Loading ...`);
 
-      loadingInterval = setInterval(() => {
+/*      loadingInterval = setInterval(() => {
         loadingProgress += loadingProgress >= 90 ? 1 : 10;
         if (loadingProgress >= 100) {
           clearInterval(loadingInterval);
           return;
         }
-        this.spinner.setStatusText(`Loading ${loadingProgress}%`);
-      }, 1000);
+        this.spinner.setStatusText(`Loading `);
+      }, 1000);*/
 
       iframeElement.addEventListener('load', () => {
-        clearInterval(loadingInterval);
+      //  clearInterval(loadingInterval);
         sendCompletedEvent(iframeElement);
       });
 

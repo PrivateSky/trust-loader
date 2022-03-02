@@ -6,7 +6,7 @@ const swName = "swBoot.js";
 let loadingInterval;
 
 function startLoadingProgressInterval(initialLoadingProgress) {
-    sendLoadingProgress(initialLoadingProgress, `Loading ${initialLoadingProgress}%`);
+    sendLoadingProgress(initialLoadingProgress, `Loading`);
     let loadingProgress = initialLoadingProgress;
     loadingInterval = setInterval(() => {
         let increment = 10;
@@ -20,7 +20,7 @@ function startLoadingProgressInterval(initialLoadingProgress) {
             clearInterval(loadingInterval);
             return;
         }
-        sendLoadingProgress(loadingProgress, `Loading ${loadingProgress}%`);
+        sendLoadingProgress(loadingProgress, `Loading`);
     }, 1000);
 }
 

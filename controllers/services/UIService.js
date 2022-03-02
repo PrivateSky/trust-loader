@@ -15,7 +15,7 @@ const SpinnerHTML = "<div class=\"loader-container\">\n" +
   '<div class="loading-status"></div>' +
   "</div>";
 
-const RELOAD_SECTION_TIMEOUT_MS = 10 * 1000;
+/*const RELOAD_SECTION_TIMEOUT_MS = 10 * 1000;
 const RELOAD_SECTION_HTML = `
     <p>
       The application is taking longer than expected to load. <br/>
@@ -28,7 +28,7 @@ const RELOAD_SECTION_HTML = `
           <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 58l80 80-80 80"/>
         </svg>  
     </button>
-`;
+`;*/
 
 function Spinner(view) {
 
@@ -45,7 +45,7 @@ function Spinner(view) {
     attachedSpinner = view.appendChild(element);
     attachedSpinner.innerHTML = SpinnerHTML;
 
-    reloadSectionTimeout = setTimeout(() => {
+/*    reloadSectionTimeout = setTimeout(() => {
       if (!attachedSpinner) {
         // the spinner has been removed already
         return;
@@ -74,7 +74,7 @@ function Spinner(view) {
         console.log("Clearing localStorage");
         localStorage.clear();
       });
-    }, RELOAD_SECTION_TIMEOUT_MS);
+    }, RELOAD_SECTION_TIMEOUT_MS);*/
   };
 
   this.removeFromView = function () {
@@ -82,9 +82,9 @@ function Spinner(view) {
       attachedSpinner.remove();
       attachedSpinner = null;
     }
-    if (reloadSectionTimeout) {
+/*    if (reloadSectionTimeout) {
       clearTimeout(reloadSectionTimeout);
-    }
+    }*/
   }
 
   this.setStatusText = function (text) {
