@@ -189,6 +189,7 @@ function NewController() {
 
   }
   this.goToLandingPage = function () {
+    LOADER_GLOBALS.clearCredentials();
     window.location.replace("./");
   };
 
