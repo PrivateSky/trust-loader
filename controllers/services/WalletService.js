@@ -79,13 +79,7 @@ function WalletService(options) {
   this.create = function (domain, arrayWithSecrets, callback) {
     console.log("Creating the wallet");
     //NavigatorUtils.unregisterAllServiceWorkers(() => {
-    const walletBuilder = new WalletBuilderService({
-      codeFolderName: "code",
-      walletTemplateFolderName: "wallet-patch",
-      appFolderName: CONSTANTS.APP_FOLDER,
-      appsFolderName: "apps-patch",
-      ssiFileName: "seed",
-    });
+    const walletBuilder = new WalletBuilderService();
 
     walletBuilder.build({secret: arrayWithSecrets}, (err, wallet) => {
       if (err) {
@@ -104,13 +98,7 @@ function WalletService(options) {
   this.createWithKeySSI = function (domain, options, callback) {
     console.log("Creating the wallet");
     //NavigatorUtils.unregisterAllServiceWorkers(() => {
-    const walletBuilder = new WalletBuilderService({
-      codeFolderName: "code",
-      walletTemplateFolderName: "wallet-patch",
-      appFolderName: CONSTANTS.APP_FOLDER,
-      appsFolderName: "apps-patch",
-      ssiFileName: "seed",
-    });
+    const walletBuilder = new WalletBuilderService();
 
     walletBuilder.build(options, (err, wallet) => {
       if (err) {
@@ -132,13 +120,9 @@ function WalletService(options) {
       }
 
       const walletBuilder = new WalletBuilderService(wallet, {
-        codeFolderName: "code",
-        walletTemplateFolderName: "wallet-patch",
-        appFolderName: CONSTANTS.APP_FOLDER,
-        appsFolderName: "apps-patch",
         dossierLoader: function (keySSI, callback) {
           resolver.loadDSU(keySSI, callback);
-        },
+        }
       });
 
       walletBuilder.rebuild(domain, (err) => {

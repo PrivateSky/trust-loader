@@ -62,7 +62,6 @@ export default {
             action: "changePin"
         }*/
     },
-
     LABELS_DICTIONARY: {
         APP_NAME: "Trust loader",
         APP_DESCRIPTION: "The \"backend\" application for wallet",
@@ -124,5 +123,12 @@ export default {
   <p class="lead">After completing the following wizard you will gain access to your wallet.</p>
   <p class="m-0">In order to gain access you have to set up your credentials.</p>
   <hr/>
-</div>`
+</div>`,
+    WALLET_BUILDER_SERVICE:{
+        CODE_FOLDER_NAME: "code",
+        WALLET_TEMPLATE_FOLDER_NAME: "wallet-patch",
+        APP_FOLDER_NAME: "/app",
+        APPS_TEMPLATE_FOLDER_NAME: "apps-patch",
+        SSI_FILE_NAME: "seed"
+    }
 }

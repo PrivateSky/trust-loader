@@ -2,6 +2,11 @@
 
 import FileService from "./FileService.js";
 import getVaultDomain from "../../utils/getVaultDomain.js";
+
+//if (!LOADER_GLOBALS) {
+    import "./../../loader-config.js";
+//}
+
 /**
  * @param {RawDossier} wallet
  * @param {object} options
@@ -11,30 +16,36 @@ import getVaultDomain from "../../utils/getVaultDomain.js";
  * @param {string} options.appsFolderName
  */
 function WalletBuilderService(options) {
-    options = options || {};
+    const defaultOptions = LOADER_GLOBALS.WALLET_BUILDER_SERVICE;
 
+    if(options){
+        options = Object.assign(defaultOptions, options);
+    }else{
+        options = defaultOptions;
+    }
 
-    if (!options.codeFolderName) {
+    const CODE_FOLDER = options.CODE_FOLDER_NAME;
+    const WALLET_TEMPLATE_FOLDER = options.WALLET_TEMPLATE_FOLDER_NAME;
+    const APP_FOLDER = options.APP_FOLDER_NAME;
+    const APPS_FOLDER = options.APPS_TEMPLATE_FOLDER_NAME;
+    const SSI_FILE_NAME = options.SSI_FILE_NAME;
+
+    if (!CODE_FOLDER) {
         throw new Error('Code folder name is required');
     }
 
-    if (!options.walletTemplateFolderName) {
+    if (!WALLET_TEMPLATE_FOLDER) {
         throw new Error('The wallet template folder name is required');
     }
 
-    if (!options.appFolderName) {
+    if (!APP_FOLDER) {
         throw new Error('The app folder name is required');
     }
 
-    if (!options.appsFolderName) {
+    if (!APPS_FOLDER) {
         throw new Error('The apps folder name is required');
     }
 
-    const CODE_FOLDER = options.codeFolderName;
-    const WALLET_TEMPLATE_FOLDER = options.walletTemplateFolderName;
-    const APP_FOLDER = options.appFolderName;
-    const APPS_FOLDER = options.appsFolderName;
-    const SSI_FILE_NAME = options.ssiFileName;
     const VAULT_DOMAIN = getVaultDomain();
 
 
@@ -193,7 +204,8 @@ function WalletBuilderService(options) {
         };
 
         if (hasTemplate) {
-            return fileService.getFolderContentAsJSON(`apps-patch/${appName}`, (err, data) => {
+            const templatePath = APPS_FOLDER || "apps-patch";
+            return fileService.getFolderContentAsJSON(`${templatePath}/${appName}`, (err, data) => {
                 let files;
 
                 try {
@@ -258,7 +270,8 @@ function WalletBuilderService(options) {
      * @param {callback} callback
      */
     const rebuildApp = (appName, seed, callback) => {
-        fileService.getFolderContentAsJSON(`apps-patch/${appName}`, (err, data) => {
+        const templatePath = APPS_FOLDER || "apps-patch";
+        fileService.getFolderContentAsJSON(`${templatePath}/${appName}`, (err, data) => {
             let files;
 
             try {
