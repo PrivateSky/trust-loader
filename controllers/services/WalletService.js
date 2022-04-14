@@ -13,10 +13,7 @@ function WalletService(options) {
   this.keySSI = options.keySSI;
 
   const openDSU = require("opendsu");
-  const bdns = openDSU.loadApi("bdns");
-  const keyssi = openDSU.loadApi("keyssi");
   const resolver = openDSU.loadApi("resolver");
-  const CONSTANTS = openDSU.constants;
 
   /**
    * @param {string} seedSSI
