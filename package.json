@@ -1,17 +1,17 @@
 {
-  "name": "trust-loader",
-  "version": "0.2.0",
-  "description": "Web Loader for the Wallet User Interface",
-  "scripts": {
-    "postinstall": "node ./node_modules/octopus/scripts/run",
-    "update": "npm run postinstall",
-    "build": "node ./node_modules/octopus/scripts/run build"
-  },
-  "dependencies": {
-    "octopus": "git+https://github.com/PrivateSky/octopus.git#1.0"
-  },
-  "devDependencies": {
-    "workbox-cli": "6.4.2"
-  },
-  "license": "MIT"
+    "name": "trust-loader",
+    "version": "v0.2.1",
+    "description": "Web Loader for the Wallet User Interface",
+    "scripts": {
+        "postinstall": "node ./node_modules/octopus/scripts/run",
+        "update": "npm run postinstall",
+        "build": "node ./node_modules/octopus/scripts/run build"
+    },
+    "dependencies": {
+        "octopus": "git+https://github.com/PrivateSky/octopus.git#1.0"
+    },
+    "devDependencies": {
+        "workbox-cli": "6.4.2"
+    },
+    "license": "MIT"
 }
