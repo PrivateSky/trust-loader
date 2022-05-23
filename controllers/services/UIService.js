@@ -196,7 +196,11 @@ function prepareView(page_labels) {
       let labelIdentifier = Object.keys(page_label).find((prop) => {
         return prop !== "attribute";
       });
-      document.querySelector(labelIdentifier)[labelAttribute] = page_label[labelIdentifier]
+      const labelElement = document.querySelector(labelIdentifier);
+      if(labelElement){
+        labelElement[labelAttribute] = page_label[labelIdentifier]
+      }
+
     })
   } catch (e) {
     console.log(e);
