@@ -151,7 +151,7 @@ if (LOADER_GLOBALS.environment.companyName) {
 
 LOADER_GLOBALS.loadCredentials();
 
-if (missingConfiguration) {
+if (missingConfiguration && LOADER_GLOBALS.DEBUG) {
   console.error("The trust-loader configuration is not up to date! Please update it using config-constants.js-template file",)
 }
 /** end patching configuration **/

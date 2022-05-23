@@ -1,4 +1,5 @@
 export default {
+    DEBUG: false,
     THEME: "app",
     REGISTRATION_FIELDS: [
         {
