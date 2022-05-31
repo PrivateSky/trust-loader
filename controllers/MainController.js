@@ -318,6 +318,16 @@ function MainController() {
 
   };
 
+  this.toggleShowPin = function () {
+    this.showPin = !this.showPin;
+    this.pinUpdate("");
+  }
+
+  this.clearPin = function () {
+    this.pinInput.value = "";
+    this.pinUpdate("");
+  }
+
   this.pinUpdate = function (value) {
     this.pinInput = document.getElementById('sso-pincode');
 
@@ -331,7 +341,11 @@ function MainController() {
 
     if (this.pinInput.value.length <= 6) {
       Array.from(document.getElementsByClassName('number-input')).forEach((item, index) => {
-        item.innerText = this.pinInput.value[index] || "";
+        if (this.showPin) {
+          this.pinInput.value[index] ? item.innerText = this.pinInput.value[index] : item.innerText = "";
+        } else {
+          this.pinInput.value[index] ? item.innerText = "*" : item.innerText = "";
+        }
       })
     }
   }

@@ -18,6 +18,10 @@
         width: 65px;
     }
 
+    .view-pin, .clear-pin {
+        margin: 10px 0px;
+    }
+
     .input-wrapper {
         width: 100%;
         display: flex;
@@ -30,8 +34,8 @@
         height: 35px;
         width: 35px;
         border: 1px solid #FFFFFF;
-        font-size: 2em;
-        line-height: 1.2em;
+        font-size: 1.5em;
+        line-height: 1.5em;
         text-align: center;
     }
 
@@ -94,6 +98,24 @@
                     <span class="number-input text-secondary"></span>
                     <span class="number-input text-secondary"></span>
                     <span class="number-input text-secondary"></span>
+                </div>
+                <div class="buttons-row">
+                    <div class="view-pin">
+                        <button class="btn btn-outline-secondary"
+                                id="btn-view-pin"
+                                onclick="controller.toggleShowPin()"
+                                type="button">
+                            Show pin
+                        </button>
+                    </div>
+                    <div class="clear-pin">
+                        <button class="btn btn-outline-secondary"
+                                id="btn-clear-pin"
+                                onclick="controller.clearPin()"
+                                type="button">
+                            Clear all
+                        </button>
+                    </div>
                 </div>
                 <div class="buttons-row">
                     <input class="text-center form-control-lg mb-2 w-100" hidden id="sso-pincode" type="text">
