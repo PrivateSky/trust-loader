@@ -268,7 +268,7 @@ function MainController() {
           return console.error("Operation failed. Try again");
         }
 
-        this.writeUserDetailsToFile(writableWallet, (err, data) => {
+/*        this.writeUserDetailsToFile(writableWallet, (err, data) => {
           if (err) {
             return console.log(err);
           }
@@ -280,7 +280,7 @@ function MainController() {
             console.log("Logged user", data);
           })
 
-        });
+        });*/
 
         console.log(`Loading wallet ${keySSI}`);
 
