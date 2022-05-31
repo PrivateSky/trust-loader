@@ -113,19 +113,20 @@ function NewController() {
                 return console.log(err);
               }
               console.log("Logged user", data);
+              document.getElementById("recovery-code").innerHTML = keySSI;
+
+              if (type && type === "sso") {
+                const basePath = window.location.href.split("loader")[0];
+                window.location.replace(basePath + "loader/?login");
+              } else {
+                self.spinner.removeFromView();
+                this.wizard.next();
+              }
             })
 
           });
 
-          document.getElementById("recovery-code").innerHTML = keySSI;
 
-          if (type && type === "sso") {
-            const basePath = window.location.href.split("loader")[0];
-            window.location.replace(basePath + "loader/?login");
-          } else {
-            self.spinner.removeFromView();
-            this.wizard.next();
-          }
         });
       });
     } catch (e) {
@@ -233,7 +234,7 @@ function NewController() {
   this.sendSSOPutRequest = function (encryptionKey) {
     const fileService = new FileService();
     let userId = getCookie("SSOUserId");
-    let userEmail = getCookie("SSOUserEmail");
+    let userEmail = getCookie("SSODetectedId");
     let url = `${fileService.constructUrlBase("putSecret/")}/${userId}`;
     let secret = generateRandom(32);
     let encrypted = encrypt(encryptionKey, secret);
