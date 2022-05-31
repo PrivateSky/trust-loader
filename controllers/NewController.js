@@ -233,7 +233,7 @@ function NewController() {
   this.sendSSOPutRequest = function (encryptionKey) {
     const fileService = new FileService();
     let userId = getCookie("SSOUserId");
-    let userEmail = getCookie("SSOUserEmail");
+    let userEmail = getCookie("SSODetectedId");
     let url = `${fileService.constructUrlBase("putSecret/")}/${userId}`;
     let secret = generateRandom(32);
     let encrypted = encrypt(encryptionKey, secret);

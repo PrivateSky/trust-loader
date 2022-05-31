@@ -338,7 +338,7 @@ function MainController() {
 
   this.openSSOWallet = function (userId, secret) {
     LOADER_GLOBALS.clearCredentials();
-    LOADER_GLOBALS.credentials.username = getCookie("SSOUserEmail");
+    LOADER_GLOBALS.credentials.username = getCookie("SSODetectedId");
     LOADER_GLOBALS.credentials.userId = userId;
     LOADER_GLOBALS.credentials.ssokey = secret;
     this.loadWallet();
