@@ -8,7 +8,7 @@ const crypto = require("opendsu").loadApi("crypto");
 
 function getIFrameBase() {
   let iPath = window.location.pathname;
-  return iPath.split("loader/")[0] + "loader/iframe/"
+  return iPath.split("loader/")[0] + "loader/cloud-wallet/";
   //return iPath.replace("index.html", "") + "iframe/";
 }
 
