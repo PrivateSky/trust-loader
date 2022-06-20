@@ -8,8 +8,10 @@ const crypto = require("opendsu").loadApi("crypto");
 
 function getIFrameBase() {
   let iPath = window.location.pathname;
+  if(LOADER_GLOBALS.environment && LOADER_GLOBALS.environment.sw){
+    return iPath.replace("index.html", "") + "iframe/";
+  }
   return iPath.split("loader/")[0] + "loader/cloud-wallet/";
-  //return iPath.replace("index.html", "") + "iframe/";
 }
 
 
