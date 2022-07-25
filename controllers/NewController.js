@@ -229,13 +229,11 @@ function NewController() {
   };
 
   this.sendSSOPutRequest = function (encryptionKey) {
-    const fileService = new FileService();
     let userId = getCookie("SSOUserId");
     let userEmail = getCookie("SSODetectedId");
     let secret = generateRandom(32);
     let encrypted = encrypt(encryptionKey, secret);
-    let putData = {secret: encrypted};
-
+    let putData = {secret: $$.Buffer.from(encrypted).toString("hex")};
     const openDSU = require("opendsu");
     const enclaveAPI = openDSU.loadAPI("enclave");
     const highSecurityProxy = enclaveAPI.initialiseHighSecurityProxy(getVaultDomain());

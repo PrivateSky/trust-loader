@@ -379,7 +379,7 @@ function MainController() {
         window.location.replace(basePath + "loader/newWallet.html");
       } else {
         if (LOADER_GLOBALS.environment.mode === "sso-pin") {
-          this.ssoEncryptedSecret = result.secret;
+          this.ssoEncryptedSecret = $$.Buffer.from(result.secret, "hex");
           this.spinner.removeFromView();
           document.getElementById("pin-numpad").classList.remove("d-none");
           document.addEventListener('keydown', (event) => {
@@ -412,7 +412,7 @@ function MainController() {
             }
           });
         } else {
-          let secret = decrypt(LOADER_GLOBALS.DEFAULT_PIN, result.secret);
+          let secret = decrypt(LOADER_GLOBALS.DEFAULT_PIN, $$.Buffer.from(result.secret, "hex"));
           this.openSSOWallet(this.userId, secret);
         }
       }
