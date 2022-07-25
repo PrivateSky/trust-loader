@@ -1,13 +1,10 @@
 import "./../loader-config.js";
 import {Spinner, prepareView, createFormElement, toggleViewPassword, prepareViewContent} from "./services/UIService.js";
 import WalletService from "./services/WalletService.js";
-import FileService from "./services/FileService.js";
 import WalletRunner from "./services/WalletRunner.js";
 import getVaultDomain from "../utils/getVaultDomain.js";
-import {generateRandom, createXMLHttpRequest, getCookie, decrypt} from "../utils/utils.js";
+import {generateRandom, getCookie, decrypt} from "../utils/utils.js";
 import constants from "../utils/constants.js";
-
-const fileService = new FileService();
 
 function MainController() {
 

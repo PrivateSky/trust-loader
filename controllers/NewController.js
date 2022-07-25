@@ -3,7 +3,7 @@ import {createFormElement, prepareView, prepareViewContent, Spinner} from "./ser
 import WalletService from "./services/WalletService.js";
 import NavigatorUtils from "./services/NavigatorUtils.js";
 import getVaultDomain from "../utils/getVaultDomain.js";
-import {createXMLHttpRequest, getCookie, encrypt, generateRandom} from "../utils/utils.js";
+import {getCookie, encrypt, generateRandom} from "../utils/utils.js";
 import FileService from "./services/FileService.js";
 import constants from "../utils/constants.js";
 function NewController() {
@@ -232,7 +232,6 @@ function NewController() {
     const fileService = new FileService();
     let userId = getCookie("SSOUserId");
     let userEmail = getCookie("SSODetectedId");
-    let url = `${fileService.constructUrlBase("putSecret/")}/${userId}`;
     let secret = generateRandom(32);
     let encrypted = encrypt(encryptionKey, secret);
     let putData = {secret: encrypted};
