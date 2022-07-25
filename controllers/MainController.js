@@ -5,6 +5,7 @@ import FileService from "./services/FileService.js";
 import WalletRunner from "./services/WalletRunner.js";
 import getVaultDomain from "../utils/getVaultDomain.js";
 import {generateRandom, createXMLHttpRequest, getCookie, decrypt} from "../utils/utils.js";
+import constants from "../utils/constants.js";
 
 const fileService = new FileService();
 
@@ -371,14 +372,17 @@ function MainController() {
   };
 
   this.sendSSOGetRequest = function (userId) {
-    let url = `${fileService.constructUrlBase("getSecret/")}/${userId}`;
-    createXMLHttpRequest(url, "GET", (err, result) => {
-      if (err || !result) {
+    const openDSU = require("opendsu");
+    const enclaveAPI = openDSU.loadAPI("enclave");
+    const highSecurityProxy = enclaveAPI.initialiseHighSecurityProxy(getVaultDomain());
+    highSecurityProxy.on("initialised", ()=>{
+      highSecurityProxy.getRecord(undefined, constants.SECRETS_TABLE, userId, (err, result) => {
+        if (err || !result) {
         const basePath = window.location.href.split("loader")[0];
         window.location.replace(basePath + "loader/newWallet.html");
       } else {
         if (LOADER_GLOBALS.environment.mode === "sso-pin") {
-          this.ssoEncryptedSecret = JSON.parse(result).secret;
+          this.ssoEncryptedSecret = result.secret;
           this.spinner.removeFromView();
           document.getElementById("pin-numpad").classList.remove("d-none");
           document.addEventListener('keydown', (event) => {
@@ -411,11 +415,12 @@ function MainController() {
             }
           });
         } else {
-          let secret = decrypt(LOADER_GLOBALS.DEFAULT_PIN, JSON.parse(result).secret);
+          let secret = decrypt(LOADER_GLOBALS.DEFAULT_PIN, result.secret);
           this.openSSOWallet(this.userId, secret);
         }
       }
-    }).send();
+    })
+    })
   }
 
 }

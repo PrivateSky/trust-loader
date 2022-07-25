@@ -36,26 +36,29 @@ function goToLandingPage() {
   window.location.replace("./");
 };
 
-function encrypt(key, dataObj) {
+function encrypt(key, data) {
   try {
     if (typeof require !== 'undefined') {
       const crypto = require("opendsu").loadAPI("crypto");
       const encryptionKey = crypto.deriveEncryptionKey(key);
-      const encryptedCredentials = crypto.encrypt(JSON.stringify(dataObj), encryptionKey);
-      return JSON.stringify(encryptedCredentials);
+      const encryptedCredentials = crypto.encrypt(data, encryptionKey);
+      return encryptedCredentials.toString("hex");
     }
   } catch (e) {
     throw e;
   }
 }
 
-function decrypt(key, dataObj) {
+function decrypt(key, encryptedData) {
+  if(typeof encryptedData === "string"){
+    encryptedData = $$.Buffer.from(encryptedData, "hex");
+  }
   try {
     if (typeof require !== 'undefined') {
       const crypto = require("opendsu").loadAPI("crypto");
       const encryptionKey = crypto.deriveEncryptionKey(key);
-      const decryptData = crypto.decrypt($$.Buffer.from(JSON.parse(dataObj)), encryptionKey);
-      return JSON.parse(decryptData.toString());
+      const decryptData = crypto.decrypt(encryptedData, encryptionKey);
+      return decryptData.toString();
     }
   } catch (e) {
     throw e
