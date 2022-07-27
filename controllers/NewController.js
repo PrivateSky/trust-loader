@@ -3,9 +3,9 @@ import {createFormElement, prepareView, prepareViewContent, Spinner} from "./ser
 import WalletService from "./services/WalletService.js";
 import NavigatorUtils from "./services/NavigatorUtils.js";
 import getVaultDomain from "../utils/getVaultDomain.js";
-import {getCookie, encrypt, generateRandom} from "../utils/utils.js";
+import {createXMLHttpRequest, getCookie, encrypt, generateRandom} from "../utils/utils.js";
 import FileService from "./services/FileService.js";
-import constants from "../utils/constants.js";
+
 function NewController() {
 
   const USER_DETAILS_FILE = "user-details.json";
@@ -123,7 +123,10 @@ function NewController() {
                 this.wizard.next();
               }
             })
+
           });
+
+
         });
       });
     } catch (e) {
@@ -229,20 +232,21 @@ function NewController() {
   };
 
   this.sendSSOPutRequest = function (encryptionKey) {
+    const fileService = new FileService();
     let userId = getCookie("SSOUserId");
     let userEmail = getCookie("SSODetectedId");
+    let url = fileService.getBaseURL(`putSSOSecret/${LOADER_GLOBALS.environment.appName}`);
+    console.log("=====================================================================================================")
+    console.log(url);
+    console.log("=====================================================================================================")
     let secret = generateRandom(32);
     let encrypted = encrypt(encryptionKey, secret);
-    let putData = {secret: $$.Buffer.from(encrypted).toString("hex")};
-    const openDSU = require("opendsu");
-    const enclaveAPI = openDSU.loadAPI("enclave");
-    const highSecurityProxy = enclaveAPI.initialiseHighSecurityProxy(getVaultDomain());
-    highSecurityProxy.on("initialised", ()=>{
-      highSecurityProxy.insertRecord(undefined, constants.SECRETS_TABLE, userId, putData, (err) => {
-        if (err) {
-         alert(`Something went wrong. Couldn't crete credentials for ${userId}.`)
-         return (document.getElementById("register-details-error").innerText = "Invalid credentials");
-        }
+    let putData = {secret: JSON.stringify(JSON.parse(encrypted).data)};
+    createXMLHttpRequest(url, "PUT", (err) => {
+      if (err) {
+        alert(`Something went wrong. Couldn't crete credentials for ${userId}.`)
+        return (document.getElementById("register-details-error").innerText = "Invalid credentials");
+      }
       LOADER_GLOBALS.clearCredentials();
       this.spinner = new Spinner(document.getElementsByTagName("body")[0]);
       this.wizard = new Stepper(document.getElementById("psk-wizard"));
@@ -250,8 +254,7 @@ function NewController() {
       LOADER_GLOBALS.credentials.userId = userId;
       LOADER_GLOBALS.credentials.ssokey = secret;
       this.createWallet("sso");
-      })
-    })
+    }).send(JSON.stringify(putData));
   }
 }
 

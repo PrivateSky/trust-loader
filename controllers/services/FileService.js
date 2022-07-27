@@ -1,7 +1,6 @@
 function FileService() {
 
-  this.constructUrlBase = function (prefix) {
-    let url;
+  function getApplicationName() {
     let location = window.location;
     const paths = location.pathname.split("/");
     while (paths.length > 0) {
@@ -11,9 +10,20 @@ function FileService() {
         break;
       }
     }
-    let applicationName = paths[0];
+    return paths[0];
+  }
+
+  this.getApplicationBaseURL = function (prefix) {
+    let applicationName = getApplicationName();
+    let url = this.getBaseURL(prefix);
+    url = `${url}${applicationName}`;
+    return url;
+  }
+
+  this.getBaseURL = function (prefix) {
+    let location = window.location;
     prefix = prefix || "";
-    url = `${location.protocol}//${location.host}/${prefix}${applicationName}`;
+    let url = `${location.protocol}//${location.host}/${prefix}`;
     return url;
   }
 
@@ -34,12 +44,12 @@ function FileService() {
   }
 
   this.getFile = function (url, callback) {
-    url = this.constructUrlBase() + "/" + url;
+    url = this.getApplicationBaseURL() + "/" + url;
     this.createRequest(url, "GET", callback).send();
   };
 
   this.getFolderContentAsJSON = function (url, callback) {
-    url = this.constructUrlBase("directory-summary/") + "/" + url;
+    url = this.getApplicationBaseURL("directory-summary/") + "/" + url;
     this.createRequest(url, "GET", callback).send();
   }
 }

@@ -1,10 +1,12 @@
 import "./../loader-config.js";
-import {Spinner, prepareView, createFormElement, toggleViewPassword, prepareViewContent} from "./services/UIService.js";
+import {Spinner, createFormElement, prepareViewContent} from "./services/UIService.js";
 import WalletService from "./services/WalletService.js";
+import FileService from "./services/FileService.js";
 import WalletRunner from "./services/WalletRunner.js";
 import getVaultDomain from "../utils/getVaultDomain.js";
-import {generateRandom, getCookie, decrypt} from "../utils/utils.js";
-import constants from "../utils/constants.js";
+import {generateRandom, createXMLHttpRequest, getCookie, decrypt} from "../utils/utils.js";
+
+const fileService = new FileService();
 
 function MainController() {
 
@@ -266,20 +268,6 @@ function MainController() {
           return console.error("Operation failed. Try again");
         }
 
-/*        this.writeUserDetailsToFile(writableWallet, (err, data) => {
-          if (err) {
-            return console.log(err);
-          }
-
-          this.getUserDetailsFromFile(writableWallet, (err, data) => {
-            if (err) {
-              return console.log(err);
-            }
-            console.log("Logged user", data);
-          })
-
-        });*/
-
         console.log(`Loading wallet ${keySSI}`);
 
         new WalletRunner({
@@ -369,17 +357,14 @@ function MainController() {
   };
 
   this.sendSSOGetRequest = function (userId) {
-    const openDSU = require("opendsu");
-    const enclaveAPI = openDSU.loadAPI("enclave");
-    const highSecurityProxy = enclaveAPI.initialiseHighSecurityProxy(getVaultDomain());
-    highSecurityProxy.on("initialised", ()=>{
-      highSecurityProxy.getRecord(undefined, constants.SECRETS_TABLE, userId, (err, result) => {
-        if (err || !result) {
+    let url = fileService.getBaseURL(`getSSOSecret/${LOADER_GLOBALS.environment.appName}`);
+    createXMLHttpRequest(url, "GET", (err, result) => {
+      if (err || !result) {
         const basePath = window.location.href.split("loader")[0];
         window.location.replace(basePath + "loader/newWallet.html");
       } else {
         if (LOADER_GLOBALS.environment.mode === "sso-pin") {
-          this.ssoEncryptedSecret = $$.Buffer.from(result.secret, "hex");
+          this.ssoEncryptedSecret = JSON.parse(result).secret;
           this.spinner.removeFromView();
           document.getElementById("pin-numpad").classList.remove("d-none");
           document.addEventListener('keydown', (event) => {
@@ -412,12 +397,11 @@ function MainController() {
             }
           });
         } else {
-          let secret = decrypt(LOADER_GLOBALS.DEFAULT_PIN, $$.Buffer.from(result.secret, "hex"));
+          let secret = decrypt(LOADER_GLOBALS.DEFAULT_PIN, JSON.parse(result).secret);
           this.openSSOWallet(this.userId, secret);
         }
       }
-    })
-    })
+    }).send();
   }
 
 }
