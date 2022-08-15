@@ -368,9 +368,10 @@ label.error {
 }
 
 .loader-container .loading-status {
-    margin-top: -100px;
+    position: absolute;
     text-align: center;
     color: #dee9f8;
+    margin-top: 160px;
 }
 
 .bg-violet {
@@ -450,6 +451,7 @@ label.error {
         background-image: none;
         background-color: rgba(64, 83, 115, 0.6);
     }
+
     .credentials-panel {
         width: 24rem;
     }
