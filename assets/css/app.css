@@ -434,6 +434,11 @@ label.error {
 
 /* Extra small devices (portrait phones, less than 576px)*/
 @media (max-width: 575.98px) {
+    body {
+        background-image: none;
+        background-color: #013646;
+    }
+
     .credentials-panel {
         width: 20rem;
     }
@@ -441,6 +446,10 @@ label.error {
 
 /* Small devices (landscape phones, 576px and up)*/
 @media (min-width: 576px) and (max-width: 767.98px) {
+    body {
+        background-image: none;
+        background-color: rgba(64, 83, 115, 0.6);
+    }
     .credentials-panel {
         width: 24rem;
     }
