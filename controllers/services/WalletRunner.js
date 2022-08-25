@@ -32,7 +32,7 @@ function WalletRunner(options) {
   const createContainerIframe = (useSeedForIframeSource) => {
     const iframe = document.createElement("iframe");
 
-    //iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms");
+    iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-top-navigation");
     iframe.setAttribute("frameborder", "0");
 
     iframe.style.overflow = "hidden";
